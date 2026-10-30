@@ -254,7 +254,7 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 <input type="file" id="inCam" accept="image/*" capture="environment" hidden>
 <input type="file" id="inVid" accept="video/*" capture="environment" hidden>
 <input type="file" id="inGal" accept="image/*,video/*" multiple hidden>
-<input type="file" id="inImport" accept="application/json,.json" hidden>
+<input type="file" id="inImport" hidden>
 
 <div class="banner" id="pickBanner" hidden><span>Toca en el mapa donde está el naranjo</span><button class="btn sm" id="pickCancel">Cancelar</button></div>
 <div class="menu" id="menu" hidden>
@@ -267,6 +267,13 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
   <button class="vbtn vprev" id="vPrev" aria-label="Anterior">‹</button>
   <button class="vbtn vnext" id="vNext" aria-label="Siguiente">›</button>
   <span class="vcount" id="vCount"></span></div>
+<div class="sheet" id="copiaOk" hidden>
+  <div class="panel">
+    <h2>Copia de seguridad guardada</h2>
+    <p id="copiaTxt" style="margin:0"></p>
+    <div class="actions"><button type="button" class="btn" id="copiaClose">Cerrar</button><button type="button" class="btn primary" id="copiaShare">Compartir copia</button></div>
+  </div>
+</div>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -606,40 +613,126 @@ document.addEventListener('keydown', e => { if ($('#viewer').hidden) return; if 
 $('#btnMenu').onclick = e => { e.stopPropagation(); $('#menu').hidden = !$('#menu').hidden; };
 document.addEventListener('click', e => { if (!$('#menu').contains(e.target)) $('#menu').hidden = true; });
 $('#mFit').onclick = () => { vista('mapa'); encuadrar(); };
-const blobToData = b => new Promise(r => { const f = new FileReader(); f.onload = () => r(f.result); f.readAsDataURL(b); });
+/* Copia de seguridad por trozos: una línea JSON por incidencia y cada foto o vídeo
+   partido en trozos de ~750 KB. Así nunca se carga en memoria un texto gigante. */
+const TROZO = 3 * 196608; // bytes por trozo (múltiplo de 3 para que el base64 se pueda unir)
+const blobB64 = b => new Promise((res, rej) => { const f = new FileReader();
+  f.onload = () => res(String(f.result).slice(String(f.result).indexOf(',') + 1)); f.onerror = () => rej(f.error); f.readAsDataURL(b); });
+const b64Bytes = s => { const bin = atob(s), u = new Uint8Array(bin.length); for (let i = 0; i < bin.length; i++) u[i] = bin.charCodeAt(i); return u; };
+const nativo = () => window.Capacitor?.isNativePlatform?.() && window.Capacitor.Plugins?.Filesystem ? window.Capacitor.Plugins : null;
+const fmtMB = n => n > 1048576 ? `${(n / 1048576).toFixed(1)} MB` : `${Math.max(1, Math.round(n / 1024))} KB`;
+
+async function escritor(nombre) {
+  const P = nativo();
+  if (!P) { const partes = []; return { add: async t => { partes.push(t); }, fin: async () => ({ blob: new Blob(partes, { type: 'application/x-ndjson' }) }) }; }
+  let dir = 'DOCUMENTS', ruta = `LasLargas/${nombre}`, empezado = false;
+  try { await P.Filesystem.requestPermissions?.(); } catch (e) {}
+  const escribir = async (t) => {
+    if (!empezado) { await P.Filesystem.writeFile({ path: ruta, data: t, directory: dir, encoding: 'utf8', recursive: true }); empezado = true; }
+    else await P.Filesystem.appendFile({ path: ruta, data: t, directory: dir, encoding: 'utf8' });
+  };
+  let buf = '';
+  return {
+    add: async t => {
+      buf += t; if (buf.length < 512 * 1024) return;
+      const t2 = buf; buf = '';
+      try { await escribir(t2); }
+      catch (err) { if (empezado || dir === 'CACHE') throw err; dir = 'CACHE'; ruta = nombre; await escribir(t2); }
+    },
+    fin: async () => {
+      if (buf) { try { await escribir(buf); } catch (err) { if (empezado || dir === 'CACHE') throw err; dir = 'CACHE'; ruta = nombre; await escribir(buf); } buf = ''; }
+      const u = await P.Filesystem.getUri({ path: ruta, directory: dir });
+      return { uri: u.uri, dir, ruta };
+    }
+  };
+}
+
+let exportando = false;
 $('#mExport').onclick = async () => {
-  toast('Preparando copia…');
-  const out = [];
-  for (const it of items) out.push({ ...it, fotos: await Promise.all((it.fotos || []).map(blobToData)) });
-  const json = JSON.stringify({ app: 'mi-naranjal', version: 1, exportado: new Date().toISOString(), items: out });
-  const nombre = `las-largas-${today()}.json`;
-  const P = window.Capacitor?.isNativePlatform?.() && window.Capacitor.Plugins;
-  if (P && P.Filesystem && P.Share) {
-    // En la APK: se guarda el archivo y se abre el menú de compartir (Drive, WhatsApp, correo…)
-    try {
-      const r = await P.Filesystem.writeFile({ path: nombre, data: json, directory: 'CACHE', encoding: 'utf8' });
-      await P.Share.share({ title: 'Copia de Las Largas', files: [r.uri] });
-    } catch (err) { if (!/cancel/i.test(String(err?.message))) toast('No se pudo exportar la copia'); }
-    return;
-  }
-  const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([json], { type: 'application/json' })); a.download = nombre;
-  document.body.appendChild(a); a.click(); a.remove();
+  if (exportando) return; exportando = true; $('#menu').hidden = true;
+  const nombre = `las-largas-${today()}-${new Date().toTimeString().slice(0, 5).replace(':', '')}.json`;
+  try {
+    const w = await escritor(nombre);
+    let total = 0;
+    await w.add(JSON.stringify({ t: 'meta', app: 'las-largas', version: 2, exportado: new Date().toISOString(), n: items.length }) + '\n');
+    for (let k = 0; k < items.length; k++) {
+      const it = items[k]; const fotos = it.fotos || [];
+      toast(`Guardando copia… ${k + 1} de ${items.length}`);
+      const { fotos: _f, ...datos } = it;
+      await w.add(JSON.stringify({ t: 'item', item: datos, media: fotos.map(b => ({ type: b.type || 'image/jpeg', size: b.size })) }) + '\n');
+      for (let i = 0; i < fotos.length; i++) {
+        const b = fotos[i]; total += b.size;
+        for (let o = 0; o < b.size; o += TROZO)
+          await w.add(JSON.stringify({ t: 'part', id: it.id, i, d: await blobB64(b.slice(o, o + TROZO)) }) + '\n');
+      }
+    }
+    await w.add(JSON.stringify({ t: 'fin' }) + '\n');
+    const r = await w.fin();
+    if (r.blob) { const a = document.createElement('a'); a.href = URL.createObjectURL(r.blob); a.download = nombre; document.body.appendChild(a); a.click(); a.remove(); toast('Copia descargada'); }
+    else avisoCopia(r, nombre, items.length, total);
+  } catch (err) {
+    toast('No se pudo guardar la copia: ' + (err?.message || 'error desconocido'));
+  } finally { exportando = false; }
 };
-$('#mImport').onclick = () => $('#inImport').click();
+
+function avisoCopia(r, nombre, n, total) {
+  const box = $('#copiaOk');
+  $('#copiaTxt').innerHTML = r.dir === 'DOCUMENTS'
+    ? `Guardada en <b>Documentos › LasLargas</b> del móvil.<br><span class="hint">${esc(nombre)} · ${n} incidencias · ${fmtMB(total)} de fotos y vídeos</span>`
+    : `Copia lista (${n} incidencias). Compártela para guardarla en Drive, WhatsApp o el correo.`;
+  box.hidden = false;
+  $('#copiaShare').onclick = async () => {
+    try { await window.Capacitor.Plugins.Share.share({ title: 'Copia de Las Largas', files: [r.uri] }); }
+    catch (err) { if (!/cancel/i.test(String(err?.message))) toast('No se pudo abrir compartir'); }
+  };
+}
+$('#copiaClose').onclick = () => $('#copiaOk').hidden = true;
+
+$('#mImport').onclick = () => { $('#menu').hidden = true; $('#inImport').click(); };
 $('#inImport').onchange = async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
   try {
-    const data = JSON.parse(await f.text());
-    if (!Array.isArray(data.items)) throw 0;
-    let n = 0;
-    for (const it of data.items) {
-      if (typeof it.lat !== 'number' || typeof it.lng !== 'number') continue;
-      it.fotos = await Promise.all((it.fotos || []).map(d => fetch(d).then(r => r.blob())));
-      await DB.put(it); n++;
-    }
+    const cab = await f.slice(0, 64).text();
+    const n = cab.includes('"t":"meta"') ? await importarV2(f) : await importarV1(f);
     items = await DB.all(); render(); encuadrar(); toast(`${n} incidencias importadas`);
   } catch (err) { toast('Ese archivo no es una copia válida de Las Largas'); }
 };
+async function importarV2(f) {
+  const dec = new TextDecoder(); let resto = '', actual = null, n = 0, ok = false;
+  const cerrar = async () => {
+    if (!actual) return;
+    actual.item.fotos = actual.media.map((m, i) => new Blob(actual.partes[i] || [], { type: m.type }));
+    await DB.put(actual.item); n++; actual = null;
+  };
+  const linea = async l => {
+    if (!l.trim()) return;
+    const o = JSON.parse(l);
+    if (o.t === 'meta') ok = true;
+    else if (o.t === 'item') { await cerrar(); if (typeof o.item?.lat === 'number' && typeof o.item?.lng === 'number') actual = { item: o.item, media: o.media || [], partes: [] }; }
+    else if (o.t === 'part' && actual && o.id === actual.item.id) (actual.partes[o.i] ||= []).push(b64Bytes(o.d));
+  };
+  const PASO = 4 * 1048576;
+  for (let off = 0; off < f.size; off += PASO) {
+    toast(`Importando… ${Math.min(100, Math.round(off / f.size * 100))} %`);
+    resto += dec.decode(await f.slice(off, off + PASO).arrayBuffer(), { stream: true });
+    const ls = resto.split('\n'); resto = ls.pop();
+    for (const l of ls) await linea(l);
+  }
+  resto += dec.decode(); await linea(resto); await cerrar();
+  if (!ok) throw new Error('formato');
+  return n;
+}
+async function importarV1(f) {
+  const data = JSON.parse(await f.text());
+  if (!Array.isArray(data.items)) throw 0;
+  let n = 0;
+  for (const it of data.items) {
+    if (typeof it.lat !== 'number' || typeof it.lng !== 'number') continue;
+    it.fotos = await Promise.all((it.fotos || []).map(d => fetch(d).then(r => r.blob())));
+    await DB.put(it); n++;
+  }
+  return n;
+}
 
 /* ---------- Arranque ---------- */
 buildFilters();
