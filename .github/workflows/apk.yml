@@ -49,18 +49,18 @@ jobs:
           ./gradlew assembleDebug --no-daemon
 
       - name: Renombrar
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk mi-naranjal.apk
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk las-largas.apk
 
       - uses: actions/upload-artifact@v4
         with:
-          name: mi-naranjal-apk
-          path: mi-naranjal.apk
+          name: las-largas-apk
+          path: las-largas.apk
 
       - name: Publicar en Releases (enlace fijo para el móvil)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "v1.0.${{ github.run_number }}" mi-naranjal.apk \
-            --title "Mi Naranjal 1.0.${{ github.run_number }}" \
-            --notes "Descarga mi-naranjal.apk desde el móvil e instálala." \
+          gh release create "v1.0.${{ github.run_number }}" las-largas.apk \
+            --title "Las Largas 1.0.${{ github.run_number }}" \
+            --notes "Descarga las-largas.apk desde el móvil e instálala." \
             --latest

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1f3d2b">
-<title>Mi Naranjal</title>
+<title>Las Largas</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -171,7 +171,7 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 </head>
 <body>
 <header>
-  <h1><span class="dot"></span>Mi Naranjal</h1>
+  <h1><span class="dot"></span>Las Largas</h1>
   <span id="count"></span>
   <button class="icon-btn" id="btnMenu" aria-label="Más opciones">
     <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
@@ -612,13 +612,13 @@ $('#mExport').onclick = async () => {
   const out = [];
   for (const it of items) out.push({ ...it, fotos: await Promise.all((it.fotos || []).map(blobToData)) });
   const json = JSON.stringify({ app: 'mi-naranjal', version: 1, exportado: new Date().toISOString(), items: out });
-  const nombre = `naranjal-${today()}.json`;
+  const nombre = `las-largas-${today()}.json`;
   const P = window.Capacitor?.isNativePlatform?.() && window.Capacitor.Plugins;
   if (P && P.Filesystem && P.Share) {
     // En la APK: se guarda el archivo y se abre el menú de compartir (Drive, WhatsApp, correo…)
     try {
       const r = await P.Filesystem.writeFile({ path: nombre, data: json, directory: 'CACHE', encoding: 'utf8' });
-      await P.Share.share({ title: 'Copia de Mi Naranjal', files: [r.uri] });
+      await P.Share.share({ title: 'Copia de Las Largas', files: [r.uri] });
     } catch (err) { if (!/cancel/i.test(String(err?.message))) toast('No se pudo exportar la copia'); }
     return;
   }
@@ -638,7 +638,7 @@ $('#inImport').onchange = async e => {
       await DB.put(it); n++;
     }
     items = await DB.all(); render(); encuadrar(); toast(`${n} incidencias importadas`);
-  } catch (err) { toast('Ese archivo no es una copia válida de Mi Naranjal'); }
+  } catch (err) { toast('Ese archivo no es una copia válida de Las Largas'); }
 };
 
 /* ---------- Arranque ---------- */
