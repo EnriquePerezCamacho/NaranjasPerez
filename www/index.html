@@ -74,7 +74,18 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 .me-dot{width:18px;height:18px;border-radius:50%;background:#1c7ed6;border:3px solid #fff;box-shadow:0 0 0 6px rgba(28,126,214,.25)}
 
 .pop h3{margin:0 0 4px;font-size:1.05rem;text-wrap:balance}
-.pop img{width:100%;height:140px;object-fit:cover;border-radius:10px;display:block;margin-bottom:8px;cursor:zoom-in}
+.gal{position:relative;margin-bottom:8px}
+.gal .track{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;border-radius:10px;scrollbar-width:none;background:#000}
+.gal .track::-webkit-scrollbar{display:none}
+.gal .m{flex:0 0 100%;height:160px;scroll-snap-align:center;position:relative;cursor:zoom-in;border:0;padding:0;background:#000}
+.gal .m img,.gal .m video{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.gal .n{position:absolute;right:8px;bottom:8px;background:rgba(0,0,0,.65);color:#fff;font-size:.78rem;padding:2px 9px;border-radius:999px;font-variant-numeric:tabular-nums;pointer-events:none}
+.gal .nav{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:20px;line-height:1;display:grid;place-items:center}
+.gal .prev{left:6px}.gal .next{right:6px}
+.play{position:absolute;inset:0;display:grid;place-items:center;pointer-events:none}
+.play span{width:44px;height:44px;border-radius:50%;background:rgba(0,0,0,.6);color:#fff;display:grid;place-items:center;font-size:17px;padding-left:3px}
+.card .thw{position:relative;width:76px;height:76px}
+.card .thw .play span{width:30px;height:30px;font-size:12px}
 .pop p{margin:6px 0;color:var(--muted);font-size:.92rem;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
 .pop .row{display:flex;gap:6px;margin-top:10px}
 .pop .row button{flex:1}
@@ -126,7 +137,8 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 .two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .photos{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
 .photos .ph{position:relative;flex:none}
-.photos img{width:96px;height:96px;object-fit:cover;border-radius:10px;display:block}
+.photos img,.photos video{width:96px;height:96px;object-fit:cover;border-radius:10px;display:block;background:#000}
+.photos .ph{cursor:zoom-in}
 .photos .x{position:absolute;top:4px;right:4px;width:28px;height:28px;border-radius:50%;border:0;background:rgba(0,0,0,.65);color:#fff;font-size:16px;line-height:1}
 .add-ph{flex:none;width:96px;height:96px;border:2px dashed var(--line);border-radius:10px;background:none;display:grid;place-items:center;align-content:center;gap:4px;color:var(--muted);font-size:.78rem}
 .add-ph svg{width:26px;height:26px}
@@ -144,8 +156,15 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 .menu{position:fixed;z-index:1600;top:calc(56px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);display:grid;min-width:230px;overflow:hidden}
 .menu button{background:none;border:0;text-align:left;padding:14px 16px;border-bottom:1px solid var(--line)}
 .menu button:last-child{border-bottom:0}
-.viewer{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.92);display:grid;place-items:center;padding:16px}
-.viewer img{max-width:100%;max-height:100%;border-radius:8px}
+.viewer{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.94);display:grid;place-items:center;
+  padding:calc(56px + env(safe-area-inset-top,0px)) 12px calc(56px + env(safe-area-inset-bottom,0px))}
+.viewer #viewerStage{width:100%;height:100%;display:grid;place-items:center;min-height:0}
+.viewer img,.viewer video{max-width:100%;max-height:100%;border-radius:8px;display:block}
+.vbtn{position:absolute;border:0;background:rgba(255,255,255,.14);color:#fff;width:48px;height:48px;border-radius:50%;font-size:24px;line-height:1;display:grid;place-items:center}
+.vclose{top:calc(10px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px))}
+.vprev{left:max(8px,env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%)}
+.vnext{right:max(8px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%)}
+.vcount{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));color:#fff;font-size:.95rem;font-variant-numeric:tabular-nums}
 .toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2100;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem;max-width:90vw}
 @media (prefers-reduced-motion:no-preference){.sheet .panel{animation:up .18s ease-out}@keyframes up{from{transform:translateY(30px);opacity:.6}}}
 </style>
@@ -199,7 +218,7 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
   <form class="panel" id="form" novalidate>
     <h2 id="formTitle">Nueva incidencia</h2>
     <div class="field">
-      <span class="lbl">Fotos</span>
+      <span class="lbl">Fotos y vídeos</span>
       <div class="photos" id="photos"></div>
     </div>
     <div class="field">
@@ -233,7 +252,8 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 </div>
 
 <input type="file" id="inCam" accept="image/*" capture="environment" hidden>
-<input type="file" id="inGal" accept="image/*" multiple hidden>
+<input type="file" id="inVid" accept="video/*" capture="environment" hidden>
+<input type="file" id="inGal" accept="image/*,video/*" multiple hidden>
 <input type="file" id="inImport" accept="application/json,.json" hidden>
 
 <div class="banner" id="pickBanner" hidden><span>Toca en el mapa donde está el naranjo</span><button class="btn sm" id="pickCancel">Cancelar</button></div>
@@ -242,7 +262,11 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
   <button id="mImport">Importar copia de seguridad</button>
   <button id="mFit">Ver todas en el mapa</button>
 </div>
-<div class="viewer" id="viewer" hidden><img id="viewerImg" alt=""></div>
+<div class="viewer" id="viewer" hidden><div id="viewerStage"></div>
+  <button class="vbtn vclose" id="vClose" aria-label="Cerrar">✕</button>
+  <button class="vbtn vprev" id="vPrev" aria-label="Anterior">‹</button>
+  <button class="vbtn vnext" id="vNext" aria-label="Siguiente">›</button>
+  <span class="vcount" id="vCount"></span></div>
 <div class="toast" id="toast" hidden></div>
 
 <script>
@@ -258,6 +282,7 @@ const TIPOS = {
   otro:{n:'Otro',c:'#495057'}
 };
 const ICON_CAM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>';
+const ICON_VID = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="6" width="13" height="12" rx="2"/><path d="m16 10 5-3v10l-5-3z"/></svg>';
 const ICON_GAL = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 16-5-5-9 9"/></svg>';
 
 /* ---------- Almacenamiento (IndexedDB, en el propio móvil) ---------- */
@@ -279,6 +304,12 @@ const DB = (() => {
 })();
 
 const urlFor = (() => { const m = new WeakMap(); return b => { let u = m.get(b); if (!u) { u = URL.createObjectURL(b); m.set(b, u); } return u; }; })();
+const isVid = b => (b?.type || '').startsWith('video/');
+const mediaHtml = (b, cls = '') => isVid(b)
+  ? `<video class="${cls}" src="${urlFor(b)}#t=0.1" preload="metadata" muted playsinline></video><span class="play"><span>▶</span></span>`
+  : `<img class="${cls}" src="${urlFor(b)}" alt="">`;
+const cuenta = arr => { const v = arr.filter(isVid).length, f = arr.length - v;
+  return [f ? `${f} foto${f > 1 ? 's' : ''}` : '', v ? `${v} vídeo${v > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · '); };
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
 const today = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
 const fmtDate = s => s ? new Date(s + 'T12:00').toLocaleDateString('es-ES', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
@@ -337,7 +368,9 @@ const pinIcon = it => L.divIcon({ className: '', iconSize: [30, 30], iconAnchor:
 function popupEl(it) {
   const t = TIPOS[it.tipo] || TIPOS.otro;
   const el = document.createElement('div'); el.className = 'pop';
-  el.innerHTML = `${it.fotos?.[0] ? `<img src="${urlFor(it.fotos[0])}" alt="">` : ''}
+  const media = it.fotos || [];
+  el.innerHTML = `${media.length ? `<div class="gal"><div class="track">${media.map((b, i) => `<button class="m" data-i="${i}" aria-label="Ver ${isVid(b) ? 'vídeo' : 'foto'} ${i + 1}">${mediaHtml(b)}</button>`).join('')}</div>
+      ${media.length > 1 ? `<button class="nav prev" aria-label="Anterior">‹</button><button class="nav next" aria-label="Siguiente">›</button><span class="n">1 / ${media.length}</span>` : ''}</div>` : ''}
     <h3>${esc(it.titulo)}</h3>
     <div class="meta"><span class="chip" style="--c:${t.c}"><i></i>${t.n}</span><span>${fmtDate(it.fecha)}</span>
     <span class="state ${it.estado}">${it.estado}</span></div>
@@ -345,7 +378,16 @@ function popupEl(it) {
     <div class="row"><button class="btn sm" data-a="edit">Editar</button>
     <button class="btn sm" data-a="toggle">${it.estado === 'resuelta' ? 'Reabrir' : 'Resuelta'}</button>
     <button class="btn sm danger" data-a="del">Borrar</button></div>`;
-  el.querySelector('img')?.addEventListener('click', () => verFoto(it.fotos[0]));
+  const track = el.querySelector('.track');
+  if (track) {
+    const idx = () => Math.round(track.scrollLeft / track.clientWidth);
+    const flechas = () => { const i = idx(), pv = el.querySelector('.prev'), nx = el.querySelector('.next'), n = el.querySelector('.n');
+      if (n) n.textContent = `${i + 1} / ${media.length}`; if (pv) pv.hidden = i === 0; if (nx) nx.hidden = i === media.length - 1; };
+    track.addEventListener('scroll', flechas, { passive: true }); setTimeout(flechas, 0);
+    el.querySelector('.prev')?.addEventListener('click', ev => { ev.stopPropagation(); track.scrollTo({ left: Math.max(0, idx() - 1) * track.clientWidth, behavior: 'smooth' }); });
+    el.querySelector('.next')?.addEventListener('click', ev => { ev.stopPropagation(); track.scrollTo({ left: Math.min(media.length - 1, idx() + 1) * track.clientWidth, behavior: 'smooth' }); });
+    track.querySelectorAll('.m').forEach(m => m.addEventListener('click', () => verMedia(media, +m.dataset.i)));
+  }
   el.addEventListener('click', async e => {
     const a = e.target.dataset.a; if (!a) return;
     if (a === 'edit') { map.closePopup(); abrirForm(it); }
@@ -374,9 +416,9 @@ function renderList(v) {
   [...v].sort((a, b) => (b.fecha || '').localeCompare(a.fecha || '') || b.creado - a.creado).forEach(it => {
     const t = TIPOS[it.tipo] || TIPOS.otro;
     const b = document.createElement('button'); b.className = 'card'; b.style.setProperty('--c', t.c);
-    b.innerHTML = `${it.fotos?.[0] ? `<img class="th" src="${urlFor(it.fotos[0])}" alt="">` : `<span class="th">${ICON_CAM}</span>`}
+    b.innerHTML = `${it.fotos?.[0] ? `<span class="thw">${mediaHtml(it.fotos[0], 'th')}</span>` : `<span class="th">${ICON_CAM}</span>`}
       <span class="body"><h3>${esc(it.titulo)}</h3>
-      <span class="meta"><span class="chip"><i></i>${t.n}</span><span>${fmtDate(it.fecha)}</span><span class="state ${it.estado}">${it.estado}</span>${it.fotos?.length > 1 ? `<span>${it.fotos.length} fotos</span>` : ''}</span>
+      <span class="meta"><span class="chip"><i></i>${t.n}</span><span>${fmtDate(it.fecha)}</span><span class="state ${it.estado}">${it.estado}</span>${it.fotos?.length > 1 || it.fotos?.some(isVid) ? `<span>${cuenta(it.fotos)}</span>` : ''}</span>
       ${it.desc ? `<p>${esc(it.desc)}</p>` : ''}</span>`;
     b.addEventListener('click', () => irA(it));
     box.appendChild(b);
@@ -450,12 +492,13 @@ function pintarFotos() {
   const box = $('#photos'); box.innerHTML = '';
   ed.fotos.forEach((b, i) => {
     const d = document.createElement('div'); d.className = 'ph';
-    d.innerHTML = `<img src="${urlFor(b)}" alt="Foto ${i + 1}"><button type="button" class="x" aria-label="Quitar foto">✕</button>`;
-    d.querySelector('img').onclick = () => verFoto(b);
-    d.querySelector('.x').onclick = () => { ed.fotos.splice(i, 1); pintarFotos(); };
+    d.innerHTML = `${mediaHtml(b)}<button type="button" class="x" aria-label="Quitar">✕</button>`;
+    d.onclick = () => verMedia(ed.fotos, i);
+    d.querySelector('.x').onclick = ev => { ev.stopPropagation(); ed.fotos.splice(i, 1); pintarFotos(); };
     box.appendChild(d);
   });
-  box.insertAdjacentHTML('beforeend', `<button type="button" class="add-ph" id="addCam">${ICON_CAM}Cámara</button><button type="button" class="add-ph" id="addGal">${ICON_GAL}Galería</button>`);
+  box.insertAdjacentHTML('beforeend', `<button type="button" class="add-ph" id="addCam">${ICON_CAM}Foto</button><button type="button" class="add-ph" id="addVid">${ICON_VID}Vídeo</button><button type="button" class="add-ph" id="addGal">${ICON_GAL}Galería</button>`);
+  $('#addVid').onclick = () => $('#inVid').click();
   $('#addCam').onclick = () => $('#inCam').click();
   $('#addGal').onclick = () => $('#inGal').click();
 }
@@ -480,10 +523,18 @@ function tomarGps() {
 }
 async function anadirFotos(files) {
   if (!ed) return;
-  for (const f of files) { try { ed.fotos.push(await compress(f)); } catch (e) { toast('No se pudo leer una de las fotos'); } }
+  for (const f of files) {
+    if (isVid(f)) {
+      if (f.size > 200 * 1024 * 1024) { toast('Vídeo demasiado grande (máx. 200 MB). Graba uno más corto.'); continue; }
+      ed.fotos.push(f); if (f.size > 60 * 1024 * 1024) toast(`Vídeo de ${Math.round(f.size / 1048576)} MB: ocupa bastante espacio`);
+      continue;
+    }
+    try { ed.fotos.push(await compress(f)); } catch (e) { toast('No se pudo leer una de las fotos'); }
+  }
   pintarFotos();
 }
 $('#inCam').onchange = e => { anadirFotos([...e.target.files]); e.target.value = ''; };
+$('#inVid').onchange = e => { anadirFotos([...e.target.files]); e.target.value = ''; };
 $('#inGal').onchange = e => { anadirFotos([...e.target.files]); e.target.value = ''; };
 $('#btnGps').onclick = tomarGps;
 $('#btnCancel').onclick = cerrarForm;
@@ -531,8 +582,25 @@ async function borrar(it) {
 $('#btnDelete').onclick = () => { const it = items.find(x => x.id === ed.id); if (it) borrar(it); };
 
 /* ---------- Visor de fotos ---------- */
-function verFoto(b) { $('#viewerImg').src = urlFor(b); $('#viewer').hidden = false; }
-$('#viewer').onclick = () => $('#viewer').hidden = true;
+let vList = [], vIdx = 0;
+function verMedia(list, i) { vList = list; vIdx = i; pintarVisor(); $('#viewer').hidden = false; }
+function pintarVisor() {
+  const b = vList[vIdx], st = $('#viewerStage');
+  st.innerHTML = isVid(b) ? `<video src="${urlFor(b)}" controls autoplay playsinline></video>` : `<img src="${urlFor(b)}" alt="">`;
+  const many = vList.length > 1;
+  $('#vPrev').hidden = !many || vIdx === 0; $('#vNext').hidden = !many || vIdx === vList.length - 1;
+  $('#vCount').textContent = many ? `${vIdx + 1} / ${vList.length}` : '';
+}
+function cerrarVisor() { $('#viewerStage').innerHTML = ''; $('#viewer').hidden = true; }
+const moverVisor = d => { const n = vIdx + d; if (n >= 0 && n < vList.length) { vIdx = n; pintarVisor(); } };
+$('#vPrev').onclick = e => { e.stopPropagation(); moverVisor(-1); };
+$('#vNext').onclick = e => { e.stopPropagation(); moverVisor(1); };
+$('#vClose').onclick = cerrarVisor;
+$('#viewer').addEventListener('click', e => { if (e.target.id === 'viewer' || e.target.id === 'viewerStage') cerrarVisor(); });
+let tx0 = null;
+$('#viewer').addEventListener('touchstart', e => { tx0 = e.touches[0].clientX; }, { passive: true });
+$('#viewer').addEventListener('touchend', e => { if (tx0 == null) return; const dx = e.changedTouches[0].clientX - tx0; tx0 = null; if (Math.abs(dx) > 50) moverVisor(dx < 0 ? 1 : -1); });
+document.addEventListener('keydown', e => { if ($('#viewer').hidden) return; if (e.key === 'Escape') cerrarVisor(); if (e.key === 'ArrowLeft') moverVisor(-1); if (e.key === 'ArrowRight') moverVisor(1); });
 
 /* ---------- Menú: copia de seguridad ---------- */
 $('#btnMenu').onclick = e => { e.stopPropagation(); $('#menu').hidden = !$('#menu').hidden; };
