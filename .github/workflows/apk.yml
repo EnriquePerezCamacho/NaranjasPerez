@@ -5,6 +5,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   apk:
     runs-on: ubuntu-latest
@@ -52,3 +55,12 @@ jobs:
         with:
           name: mi-naranjal-apk
           path: mi-naranjal.apk
+
+      - name: Publicar en Releases (enlace fijo para el móvil)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "v1.0.${{ github.run_number }}" mi-naranjal.apk \
+            --title "Mi Naranjal 1.0.${{ github.run_number }}" \
+            --notes "Descarga mi-naranjal.apk desde el móvil e instálala." \
+            --latest
