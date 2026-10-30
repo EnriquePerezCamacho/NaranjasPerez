@@ -1,0 +1,54 @@
+name: Compilar APK
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  apk:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Instalar dependencias
+        run: npm install
+
+      - name: Crear proyecto Android
+        run: npx cap add android
+
+      - name: Permisos de cámara y GPS
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          sed -i 's#<application#<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />\n    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />\n    <uses-permission android:name="android.permission.CAMERA" />\n    <uses-feature android:name="android.hardware.location.gps" android:required="false" />\n    <uses-feature android:name="android.hardware.camera" android:required="false" />\n\n    <application#' $M
+          cat $M
+
+      - name: Icono de la app
+        run: npx capacitor-assets generate --android
+        continue-on-error: true
+
+      - name: Copiar la web al proyecto
+        run: npx cap sync android
+
+      - name: Compilar APK
+        run: |
+          cd android
+          chmod +x gradlew
+          ./gradlew assembleDebug --no-daemon
+
+      - name: Renombrar
+        run: cp android/app/build/outputs/apk/debug/app-debug.apk mi-naranjal.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: mi-naranjal-apk
+          path: mi-naranjal.apk

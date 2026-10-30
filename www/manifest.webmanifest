@@ -1,0 +1,16 @@
+{
+  "name": "Mi Naranjal",
+  "short_name": "Naranjal",
+  "description": "Incidencias de los naranjos con foto y ubicación en el mapa",
+  "lang": "es",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#1f3d2b",
+  "theme_color": "#1f3d2b",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "appId": "es.cantillana.minaranjal",
+  "appName": "Mi Naranjal",
+  "webDir": "www",
+  "android": { "allowMixedContent": false }
+}
