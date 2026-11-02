@@ -140,7 +140,11 @@ const Sync = (() => {
       if (manual) toast(n ? `Sincronizado: ${n} cambio${n > 1 ? 's' : ''} recibido${n > 1 ? 's' : ''}` : 'Sincronizado: todo al día');
       bajarFotos(c);
     } catch (e) {
-      ultimoError = e?.message || String(e); punto('err');
+      const m = e?.message || String(e);
+      ultimoError = /registros|PGRST205|relation .* does not exist|schema cache/i.test(m) ? 'Falta preparar el servidor (las tablas de Supabase)'
+        : /bucket|not found/i.test(m) && /foto/i.test(m) ? 'Falta preparar el servidor (el almacenamiento de fotos)'
+        : /fetch|network/i.test(m) ? 'Sin conexión con el servidor' : m;
+      punto('err');
       if (manual) toast('No se pudo sincronizar: ' + ultimoError, 5000);
     } finally {
       ocupado = false; pintarEstado();
