@@ -21,6 +21,7 @@
   </button>
   <span id="count"></span>
   <span class="sync-dot" id="syncDot" hidden title="Sincronización"></span>
+  <button class="sync-off" id="syncOff" hidden>Sin conectar</button>
   <button class="icon-btn" id="btnMenu" aria-label="Más opciones">
     <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
   </button>
@@ -223,7 +224,7 @@
 <!-- Sincronización -->
 <div class="sheet" id="syncSheet" hidden>
   <form class="panel" id="syncForm" novalidate>
-    <h2>Compartir con otro móvil</h2>
+    <h2 id="syTitle">Compartir con otro móvil</h2>
     <p class="small" style="margin:-6px 0 0">Incidencias, notas, fotos, parcelas y tratamientos se comparten entre los móviles que entren con su cuenta. Funciona sin cobertura: se guarda en el móvil y se sincroniza cuando vuelve la conexión.</p>
     <div class="calc" id="syEstado"></div>
     <div class="field"><label for="syNombre">Tu nombre</label><input id="syNombre" maxlength="30" placeholder="Ej.: Enrique" autocomplete="name"><span class="hint">Aparece en las notas de seguimiento que escribas.</span></div>

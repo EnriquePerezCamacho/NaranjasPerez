@@ -24,7 +24,8 @@ const Sync = (() => {
 
   /* ---------- Estado en la cabecera ---------- */
   function punto(e) {
-    const d = $('#syncDot'); d.hidden = e === 'off';
+    const d = $('#syncDot'), sin = e === 'off';
+    $('#syncOff').hidden = !sin || !(cfg().url && cfg().key); d.hidden = sin;
     d.className = 'sync-dot ' + (e === 'busy' ? 'busy' : e === 'ok' ? 'ok' : e === 'err' ? 'err' : '');
     d.title = e === 'ok' ? 'Sincronizado' : e === 'busy' ? 'Sincronizando…' : e === 'err' ? 'Error de sincronización' : '';
   }
@@ -171,8 +172,10 @@ const Sync = (() => {
     const dentro = !!usuario;
     $('#syLogin').hidden = dentro; $('#sySalir').hidden = !dentro;
     $('#syOk').textContent = dentro ? 'Sincronizar ahora' : 'Entrar';
+    $('#syCerrar').textContent = dentro ? 'Cerrar' : 'Ahora no';
+    $('#syTitle').textContent = dentro ? 'Compartir con otro móvil' : 'Entra para compartir los datos';
     $('#syEstado').innerHTML = !dentro
-      ? (url && key ? 'Entra con tu correo y contraseña para empezar a compartir los datos.' : 'Faltan los datos del servidor.')
+      ? (url && key ? '<b>Este móvil todavía no comparte nada.</b><br>Entra con el correo y la contraseña que creaste en Supabase. Desde ese momento lo que apuntes aquí le llegará al otro móvil, y lo del otro te llegará a ti.' : 'Faltan los datos del servidor.')
       : `Conectado como <b>${esc(usuario.email)}</b><br>` +
         (ocupado ? 'Sincronizando…' : ultimoError ? `<span style="color:var(--danger)">Último intento: ${esc(ultimoError)}</span>` : ultima ? `Última sincronización: ${new Date(ultima).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}` : 'Aún no se ha sincronizado') +
         `<br><span class="hint">${p ? `${p} cambio${p > 1 ? 's' : ''} pendiente${p > 1 ? 's' : ''} de subir` : 'Nada pendiente de subir'}</span>`;
@@ -183,6 +186,7 @@ const Sync = (() => {
   }
   $('#mCuenta').onclick = abrir;
   $('#syncDot').onclick = abrir;
+  $('#syncOff').onclick = abrir;
   $('#syCerrar').onclick = () => { lsSet('autor', $('#syNombre').value.trim()); $('#syncSheet').hidden = true; };
   $('#sySalir').onclick = async () => {
     if (!(await confirmar('Los datos se quedan en este móvil, pero dejarán de compartirse hasta que vuelvas a entrar.', { titulo: 'Cerrar sesión', ok: 'Cerrar sesión' }))) return;
@@ -220,7 +224,13 @@ const Sync = (() => {
     document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') sincronizar(); });
     plugin('App')?.addListener('appStateChange', s => { if (s.isActive) sincronizar(); });
     const { url, key } = cfg();
-    if (url && key) try { if (await sesion()) { punto('ok'); sincronizar(); } } catch (e) {}
+    if (!(url && key)) return;
+    let dentro = false;
+    try { dentro = !!(await sesion()); } catch (e) {}
+    if (dentro) { punto('ok'); sincronizar(); return; }
+    punto('off');
+    // Primera vez sin cuenta: se abre la pantalla de entrar. Si pulsa "Ahora no", no vuelve a salir sola (queda el aviso arriba).
+    if (!ls('syncPreguntado')) { lsSet('syncPreguntado', '1'); abrir(); }
   }
   return { init, sincronizar, abrir, descargarUno, pendientes };
 })();

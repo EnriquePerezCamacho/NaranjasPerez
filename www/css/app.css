@@ -23,10 +23,12 @@ header{background:var(--leaf);color:var(--leaf-ink);display:flex;align-items:cen
   padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
 header h1{margin:0;font-size:1.2rem;letter-spacing:.01em;display:flex;align-items:center;gap:8px;white-space:nowrap}
 header h1 .dot{width:14px;height:14px;border-radius:50%;background:var(--orange);box-shadow:inset -3px -3px 0 rgba(0,0,0,.18)}
-#count{margin-left:auto;font-size:.85rem;opacity:.85;font-variant-numeric:tabular-nums;white-space:nowrap}
+#count{margin-left:auto;font-size:.85rem;opacity:.85;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:420px){header:has(#syncOff:not([hidden])) #count{display:none}header:has(#syncOff:not([hidden])) .sync-off{margin-left:auto}}
 .due-pill{display:inline-flex;align-items:center;gap:5px;border:0;border-radius:999px;background:var(--danger);color:#fff;font-weight:700;font-size:.85rem;padding:4px 10px 4px 8px}
 .due-pill svg{width:16px;height:16px}
-.sync-dot{width:10px;height:10px;border-radius:50%;background:#9aa5a0;flex:none}
+.sync-off{border:1.5px solid rgba(255,255,255,.55);background:transparent;color:inherit;border-radius:999px;font-size:.78rem;font-weight:700;padding:3px 9px;white-space:nowrap;flex:none}
+.sync-dot{cursor:pointer;width:10px;height:10px;border-radius:50%;background:#9aa5a0;flex:none}
 .sync-dot.ok{background:#69db7c}.sync-dot.busy{background:#ffd43b}.sync-dot.err{background:#ff6b6b}
 .icon-btn{background:transparent;border:0;color:inherit;width:40px;height:40px;border-radius:10px;display:grid;place-items:center;flex:none}
 .icon-btn:active{background:rgba(255,255,255,.12)}
@@ -162,7 +164,9 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 /* Formularios */
 .sheet{position:fixed;inset:0;z-index:1500;background:rgba(0,0,0,.45);display:flex;align-items:flex-end;justify-content:center}
 .sheet .panel{background:var(--panel);width:100%;max-width:560px;max-height:94dvh;overflow:auto;border-radius:18px 18px 0 0;
-  padding:16px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:grid;gap:14px}
+  padding:16px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.sheet .panel > *,#syLogin > *{min-width:0}
+#syLogin{grid-template-columns:minmax(0,1fr)}
 .sheet.center{align-items:center;padding:16px}
 .sheet.center .panel{border-radius:18px;max-width:420px}
 .sheet h2{margin:0;font-size:1.2rem}
