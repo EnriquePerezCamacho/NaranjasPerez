@@ -1,8 +1,9 @@
 // Guarda la app y los trozos de mapa ya vistos para poder usarla en el campo con poca cobertura.
-const APP = 'naranjal-app-v1';
+const APP = 'naranjal-app-v3';
 const TILES = 'naranjal-mapas-v1';
-const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png',
-  './leaflet/leaflet.css', './leaflet/leaflet.js'];
+const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './css/app.css',
+  './leaflet/leaflet.css', './leaflet/leaflet.js',
+  ...['util', 'db', 'map', 'notif', 'incidencias', 'parcelas', 'tratamientos', 'informes', 'backup', 'config', 'sync', 'main'].map(n => `./js/${n}.js`)];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(APP).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));

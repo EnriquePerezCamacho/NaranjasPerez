@@ -39,6 +39,9 @@ jobs:
         run: npx capacitor-assets generate --android
         continue-on-error: true
 
+      - name: Icono de los avisos
+        run: cp -r assets/notif/* android/app/src/main/res/
+
       - name: Copiar la web al proyecto
         run: npx cap sync android
 

@@ -2,5 +2,13 @@
   "appId": "es.cantillana.minaranjal",
   "appName": "Las Largas",
   "webDir": "www",
-  "android": { "allowMixedContent": false }
+  "android": {
+    "allowMixedContent": false
+  },
+  "plugins": {
+    "LocalNotifications": {
+      "smallIcon": "ic_stat_naranja",
+      "iconColor": "#EE7D00"
+    }
+  }
 }
