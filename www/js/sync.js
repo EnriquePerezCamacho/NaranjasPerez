@@ -179,7 +179,7 @@ const Sync = (() => {
     if (bajando) return; bajando = true; let n = 0;
     try {
       for (const it of vivos('inc')) for (const m of todaMedia(it)) {
-        if (m.blob || !m.path || (m.size || 0) > 30 * 1048576) continue;
+        if (m.blob || !m.path) continue; // fotos y vídeos: todo se guarda en el móvil automáticamente
         if (await bajarArchivo(c, m, it)) { n++; if (n % 6 === 0) renderInc(); }
       }
     } finally { bajando = false; }

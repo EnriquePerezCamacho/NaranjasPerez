@@ -225,11 +225,18 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 .banner .btn.primary{background:var(--leaf);color:var(--leaf-ink)}
 .menu{position:fixed;z-index:1600;top:calc(56px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);display:grid;min-width:240px;overflow:hidden}
 .menu button{background:none;border:0;text-align:left;padding:14px 16px;border-bottom:1px solid var(--line)}
-.menu button:last-child{border-bottom:0}
+.menu button:last-of-type{border-bottom:0}
+.mver{padding:8px 16px 10px;font-size:.78rem;color:var(--muted);border-top:1px solid var(--line)}
 .viewer{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.94);display:grid;place-items:center;
   padding:calc(56px + env(safe-area-inset-top,0px)) 12px calc(56px + env(safe-area-inset-bottom,0px))}
 .viewer #viewerStage{width:100%;height:100%;display:grid;place-items:center;min-height:0}
 .viewer img,.viewer video{max-width:100%;max-height:100%;border-radius:8px;display:block}
+.viewer{touch-action:none;overflow:hidden}
+.viewer #vImg{transform-origin:center center;user-select:none;-webkit-user-select:none;will-change:transform}
+.viewer.zoomed #vImg{border-radius:0}
+.viewer.zoomed .vprev,.viewer.zoomed .vnext{display:none}
+.vsave{top:calc(10px + env(safe-area-inset-top,0px));left:max(12px,env(safe-area-inset-left,0px))}
+.vzhint{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(46px + env(safe-area-inset-bottom,0px));color:rgba(255,255,255,.75);font-size:.82rem;white-space:nowrap;pointer-events:none}
 .vbtn{position:absolute;border:0;background:rgba(255,255,255,.14);color:#fff;width:48px;height:48px;border-radius:50%;font-size:24px;line-height:1;display:grid;place-items:center}
 .vclose{top:calc(10px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px))}
 .vprev{left:max(8px,env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%)}

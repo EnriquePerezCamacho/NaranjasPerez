@@ -53,5 +53,6 @@ document.addEventListener('keydown', e => {
   encuadrar(false);
   Notif.init(); Notif.reprogramar();
   Sync.init();
+  (async () => { let v = ''; try { v = (await plugin('App')?.getInfo())?.version || ''; } catch (e) {} $('#mVer').textContent = 'Las Largas' + (v ? ' · versión ' + v : ''); })();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !nativo()) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
