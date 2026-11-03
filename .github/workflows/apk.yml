@@ -49,9 +49,25 @@ jobs:
         env:
           KS: ${{ secrets.LL_KEYSTORE_B64 }}
         run: |
-          mkdir -p ~/.android
-          if [ -n "$KS" ]; then echo "$KS" | base64 -d > ~/.android/debug.keystore; else cp firma/las-largas.keystore ~/.android/debug.keystore; fi
-          keytool -list -keystore ~/.android/debug.keystore -storepass android | grep -i fingerprint
+          if [ -n "$KS" ]; then echo "$KS" | base64 -d > "$RUNNER_TEMP/ll.keystore"; else cp firma/las-largas.keystore "$RUNNER_TEMP/ll.keystore"; fi
+          keytool -list -keystore "$RUNNER_TEMP/ll.keystore" -storepass android | grep -i fingerprint
+          cat >> android/app/build.gradle <<EOF2
+
+          android {
+              signingConfigs {
+                  fija {
+                      storeFile file("$RUNNER_TEMP/ll.keystore")
+                      storePassword "android"
+                      keyAlias "androiddebugkey"
+                      keyPassword "android"
+                  }
+              }
+              buildTypes {
+                  debug { signingConfig signingConfigs.fija }
+              }
+          }
+          EOF2
+          tail -16 android/app/build.gradle
 
       - name: Número de versión
         run: |
@@ -64,8 +80,13 @@ jobs:
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
 
-      - name: Renombrar
-        run: cp android/app/build/outputs/apk/debug/app-debug.apk las-largas.apk
+      - name: Renombrar y comprobar la firma
+        run: |
+          cp android/app/build/outputs/apk/debug/app-debug.apk las-largas.apk
+          A=$(keytool -printcert -jarfile las-largas.apk | grep -m1 SHA256 | awk '{print $2}')
+          K=$(keytool -list -v -keystore "$RUNNER_TEMP/ll.keystore" -storepass android | grep -m1 SHA256 | awk '{print $2}')
+          echo "APK $A"; echo "KEY $K"
+          [ "$A" = "$K" ] || { echo "La APK no lleva la firma fija"; exit 1; }
 
       - uses: actions/upload-artifact@v4
         with:
