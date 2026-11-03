@@ -141,6 +141,7 @@ function renderLista(v, total) {
       <span class="meta"><span class="chip"><i></i>${t.n}</span><span>${fmtDate(it.fecha)}</span><span class="state ${it.estado}">${it.estado}</span></span>
       ${ub ? `<span class="small">${esc(ub)}</span>` : ''}
       ${badgeRevisar(it)}
+      ${it._sync && typeof Sync !== 'undefined' && Sync.conectado() ? `<span class="badge ${Sync.error(it.id) ? 'danger' : 'muted'}">${Sync.error(it.id) ? 'No se ha podido subir' : 'Pendiente de subir'}</span>` : ''}
       ${it.desc ? `<p>${esc(it.desc)}</p>` : ''}
       ${media.length > 1 || nn ? `<span class="small">${[media.length > 1 || media.some(isVid) ? cuentaMedia(media) : '', nn ? `${nn} nota${nn > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · ')}</span>` : ''}</span>`;
     b.addEventListener('click', () => irA(it));

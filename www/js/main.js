@@ -8,6 +8,7 @@ function vista(v) {
   $('#btnNew').hidden = !(v === 'mapa' || v === 'lista');
   $('#btnFit').hidden = $('#btnLocate').hidden = v !== 'mapa';
   if (v === 'mapa') setTimeout(() => map.invalidateSize(), 50);
+  if (v === 'lista') renderInc();
   if (v === 'parcelas') renderParc();
   if (v === 'trat') renderTrat();
 }

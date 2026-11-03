@@ -227,6 +227,11 @@
     <h2 id="syTitle">Compartir con otro móvil</h2>
     <p class="small" style="margin:-6px 0 0">Incidencias, notas, fotos, parcelas y tratamientos se comparten entre los móviles que entren con su cuenta. Funciona sin cobertura: se guarda en el móvil y se sincroniza cuando vuelve la conexión.</p>
     <div class="calc" id="syEstado"></div>
+    <div class="calc" id="syPend" hidden></div>
+    <div class="row" id="syArreglar" hidden style="display:flex;gap:8px;flex-wrap:wrap">
+      <button type="button" class="btn sm" id="syReenviar" style="flex:1">Reenviar todo</button>
+      <button type="button" class="btn sm" id="syRecibir" style="flex:1">Recibir todo de nuevo</button>
+    </div>
     <div class="field"><label for="syNombre">Tu nombre</label><input id="syNombre" maxlength="30" placeholder="Ej.: Enrique" autocomplete="name"><span class="hint">Aparece en las notas de seguimiento que escribas.</span></div>
     <div id="syLogin" style="display:grid;gap:14px">
       <div class="field"><label for="syEmail">Correo</label><input id="syEmail" type="email" autocomplete="username" placeholder="tu@correo.com"></div>
