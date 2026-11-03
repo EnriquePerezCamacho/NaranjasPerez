@@ -12,7 +12,8 @@ const Sync = (() => {
   /* Ninguna petición puede quedarse colgada: 30 s, o más si sube un archivo grande (mín. ~25 KB/s) */
   function fetchConLimite(url, opts = {}) {
     const b = opts.body, tam = b && typeof b.size === 'number' ? b.size : (typeof b === 'string' ? b.length : 0);
-    const ms = 30000 + tam / 25;
+    const u = String(url), descarga = /\/storage\/v1\/object\//.test(u) && (!opts.method || opts.method === 'GET');
+    const ms = descarga ? 600000 : 30000 + tam / 25;
     const ctl = new AbortController(), t = setTimeout(() => ctl.abort(), ms);
     opts.signal?.addEventListener?.('abort', () => ctl.abort());
     return fetch(url, { ...opts, signal: ctl.signal }).finally(() => clearTimeout(t));
@@ -114,7 +115,7 @@ const Sync = (() => {
         if (/JWT|auth/i.test(e?.message || '')) throw e;
       }
     }
-    if (fallos) throw new Error(`${fallos} incidencia${fallos > 1 ? 's' : ''} con fotos o vídeos sin subir (se reintentará)`);
+    return fallos ? `${fallos} incidencia${fallos > 1 ? 's' : ''} con fotos o vídeos sin subir (se reintentará)` : '';
   }
   async function borrarArchivos(c, id) {
     try {
@@ -178,12 +179,20 @@ const Sync = (() => {
   async function bajarFotos(c) {
     if (bajando) return; bajando = true; let n = 0;
     try {
-      for (const it of vivos('inc')) for (const m of todaMedia(it)) {
-        if (m.blob || !m.path) continue; // fotos y vídeos: todo se guarda en el móvil automáticamente
-        if (await bajarArchivo(c, m, it)) { n++; if (n % 6 === 0) renderInc(); }
+      // primero las fotos (pequeñas), luego los vídeos
+      const lista = vivos('inc').flatMap(it => todaMedia(it).filter(m => !m.blob && m.path).map(m => ({ it, m })))
+        .sort((a, b) => (isVid(a.m) - isVid(b.m)) || ((a.m.size || 0) - (b.m.size || 0)));
+      for (const { it, m } of lista) {
+        if (!navigator.onLine || !usuario) break;
+        const actual = porId('inc', it.id); if (!actual) continue;
+        const real = todaMedia(actual).find(x => x.id === m.id); if (!real || real.blob) continue;
+        try { if (await bajarArchivo(c, real, actual)) { n++; if (n % 4 === 0) renderInc(); } } catch (e) {}
       }
     } finally { bajando = false; }
-    if (n) { renderInc(); renderSiVisible(); }
+    if (n) {
+      renderInc(); renderSiVisible();
+      if (!$('#viewer').hidden && $('#vBajar')) { const cur = vList[vIdx], r = vivos('inc').flatMap(todaMedia).find(x => x.id === cur?.id); if (r?.blob) { cur.blob = r.blob; pintarVisor(); } }
+    }
   }
 
   /* ---------- Ciclo ---------- */
@@ -194,12 +203,12 @@ const Sync = (() => {
     if (!navigator.onLine) { punto('err'); ultimoError = 'Sin conexión'; if (manual) toast('Sin conexión: se sincronizará cuando vuelva'); return; }
     ocupado = true; punto('busy');
     try {
-      await subir(c);
+      const aviso = await subir(c);
       const n = await bajar(c);
       if (n) { renderTodo(); Notif.reprogramar(); }
-      ultima = Date.now(); ultimoError = ''; punto('ok');
-      if (manual) toast(n ? `Sincronizado: ${n} cambio${n > 1 ? 's' : ''} recibido${n > 1 ? 's' : ''}` : 'Sincronizado: todo al día');
-      bajarFotos(c);
+      bajarFotos(c); // descarga automática de fotos y vídeos del otro móvil, siempre
+      ultima = Date.now(); ultimoError = aviso; punto(aviso ? 'err' : 'ok');
+      if (manual) toast(aviso ? 'Sincronizado, pero ' + aviso.charAt(0).toLowerCase() + aviso.slice(1) : n ? `Sincronizado: ${n} cambio${n > 1 ? 's' : ''} recibido${n > 1 ? 's' : ''}` : 'Sincronizado: todo al día', aviso ? 5000 : 2600);
     } catch (e) {
       const m = e?.message || String(e);
       ultimoError = /registros|PGRST205|relation .* does not exist|schema cache/i.test(m) ? 'Falta preparar el servidor (las tablas de Supabase)'

@@ -74,6 +74,7 @@ function popupEl(it) {
     <div class="meta"><span class="chip" style="--c:${t.c}"><i></i>${t.n}</span><span>${fmtDate(it.fecha)}</span><span class="state ${it.estado}">${it.estado}</span></div>
     ${ub ? `<div class="ubic">${esc(ub)}</div>` : ''}
     ${badgeRevisar(it)}
+    ${it.rapida ? '<span class="badge warn" style="margin-top:6px">Foto rápida · pulsa Editar para completar</span>' : ''}
     ${it.desc ? `<p>${esc(it.desc)}</p>` : ''}
     ${nota ? `<div class="last"><span><b>${fmtCorta(nota.fecha)}${nn > 1 ? ` (${nn} notas)` : ''}:</b> ${esc(nota.texto || 'solo fotos')}</span></div>` : ''}
     <div class="row"><button class="btn sm" data-a="edit">Editar</button>
@@ -141,6 +142,7 @@ function renderLista(v, total) {
       <span class="meta"><span class="chip"><i></i>${t.n}</span><span>${fmtDate(it.fecha)}</span><span class="state ${it.estado}">${it.estado}</span></span>
       ${ub ? `<span class="small">${esc(ub)}</span>` : ''}
       ${badgeRevisar(it)}
+      ${it.rapida ? '<span class="badge warn">Foto rápida · falta completar</span>' : ''}
       ${it._sync && typeof Sync !== 'undefined' && Sync.conectado() ? `<span class="badge ${Sync.error(it.id) ? 'danger' : 'muted'}">${Sync.error(it.id) ? 'No se ha podido subir' : 'Pendiente de subir'}</span>` : ''}
       ${it.desc ? `<p>${esc(it.desc)}</p>` : ''}
       ${media.length > 1 || nn ? `<span class="small">${[media.length > 1 || media.some(isVid) ? cuentaMedia(media) : '', nn ? `${nn} nota${nn > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · ')}</span>` : ''}</span>`;
@@ -173,7 +175,7 @@ function abrirForm(it) {
     ? { ...it, fotos: [...(it.fotos || [])], seguimiento: (it.seguimiento || []).map(s => ({ ...s, fotos: [...(s.fotos || [])] })), nuevo: false, parcelaManual: true }
     : { id: uid(), titulo: '', tipo: 'plaga', estado: 'pendiente', fecha: today(), desc: '', fotos: [], seguimiento: [], parcela: '', fila: '', arbol: '', revisar: null, lat: null, lng: null, acc: null, nuevo: true, parcelaManual: false };
   $('#formTitle').textContent = ed.nuevo ? 'Nueva incidencia' : 'Editar incidencia';
-  $('#fTitulo').value = ed.titulo; $('#fTipo').value = ed.tipo; $('#fEstado').value = ed.estado; $('#fFecha').value = ed.fecha;
+  $('#fTitulo').value = ed.rapida ? '' : ed.titulo; $('#fTipo').value = ed.tipo; $('#fEstado').value = ed.estado; $('#fFecha').value = ed.fecha;
   $('#fDesc').value = ed.desc; $('#fFila').value = ed.fila || ''; $('#fArbol').value = ed.arbol || '';
   pintarParcelaForm();
   pintarRevForm = selectorRevisar($('#fRevisar'), () => ed.revisar, v => ed.revisar = v);
@@ -211,6 +213,42 @@ $('#btnGps').onclick = tomarGps;
 $('#btnCancel').onclick = cerrarForm;
 $('#btnNew').onclick = () => { vista('mapa'); abrirForm(null); destinoMedia = { arr: ed.fotos, pintar: () => pintarMedia($('#photos'), ed.fotos) }; $('#inCam').click(); };
 
+/* ---------- Foto rápida: la foto y la ubicación al momento, sin rellenar nada ---------- */
+let rapidaPos = null;
+$('#btnRapida').onclick = () => {
+  rapidaPos = null;
+  // el GPS empieza a buscar mientras se hace la foto
+  mejorPosicion(c => { if (c && (!rapidaPos || c.accuracy < rapidaPos.accuracy)) rapidaPos = c; }, { segundos: 30, objetivo: 6 });
+  $('#inQuick').click();
+};
+$('#inQuick').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  toast('Guardando foto…', 20000);
+  let blob;
+  try { blob = await comprimir(f); } catch (err) { toast('No se pudo leer la foto'); return; }
+  let c = rapidaPos;
+  if (!c || c.accuracy > 20) {
+    toast('Buscando ubicación…', 20000);
+    const c2 = await mejorPosicion(null, { segundos: c ? 6 : 12, objetivo: 10 });
+    if (c2 && (!c || c2.accuracy < c.accuracy)) c = c2;
+  }
+  if (!c) {
+    // Sin GPS: se abre la ficha con la foto para elegir el punto en el mapa
+    vista('mapa'); abrirForm(null); ed.fotos.push(mkMedia(blob)); pintarMedia($('#photos'), ed.fotos);
+    toast('No hay señal GPS: toca «Elegir en el mapa»', 5000); return;
+  }
+  const hora = new Date().toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
+  const rec = {
+    id: uid(), titulo: `Foto rápida · ${fmtCorta(today())}, ${hora}`, tipo: 'otro', estado: 'pendiente', fecha: today(), desc: '',
+    fotos: [mkMedia(blob)], seguimiento: [], parcela: parcelaDe(c.latitude, c.longitude), fila: '', arbol: '', revisar: null,
+    lat: c.latitude, lng: c.longitude, acc: c.accuracy, rapida: true
+  };
+  try { await guardar('inc', rec); } catch (err) { toast('No se pudo guardar. ¿Queda espacio en el móvil?'); return; }
+  renderInc(); Notif.reprogramar(); navigator.storage?.persist?.();
+  if (vistaActual === 'mapa') map.setView([rec.lat, rec.lng], Math.max(map.getZoom(), 18));
+  toast(`Guardada con ubicación (±${Math.round(c.accuracy)} m)`, 7000, { texto: 'Completar', fn: () => abrirForm(porId('inc', rec.id)) });
+};
+
 /* Elegir el punto en el mapa */
 $('#btnPick').onclick = () => {
   if (enDibujo()) return;
@@ -234,7 +272,7 @@ $('#form').addEventListener('submit', async e => {
   ed.desc = $('#fDesc').value.trim(); ed.fila = $('#fFila').value.trim(); ed.arbol = $('#fArbol').value.trim();
   if (ed.estado === 'resuelta') ed.revisar = null;
   ed.titulo = $('#fTitulo').value.trim() || [TIPOS[ed.tipo].n, ed.fila && `fila ${ed.fila}`, ed.arbol && `árbol ${ed.arbol}`].filter(Boolean).join(' · ') + (ed.fila || ed.arbol ? '' : ` · ${fmtCorta(ed.fecha)}`);
-  const nuevo = ed.nuevo; const rec = { ...ed }; delete rec.nuevo; delete rec.parcelaManual;
+  const nuevo = ed.nuevo; const rec = { ...ed }; delete rec.nuevo; delete rec.parcelaManual; rec.rapida = false;
   try {
     await guardar('inc', rec);
     cerrarForm(); renderInc(); renderSiVisible(); Notif.reprogramar();

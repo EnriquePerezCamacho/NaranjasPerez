@@ -65,9 +65,17 @@
   <button class="map-btn" id="btnLocate" aria-label="Seguir mi posición" aria-pressed="false" title="Mi posición">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
   </button>
-  <button class="fab" id="btnNew" aria-label="Nueva incidencia con foto">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
-  </button>
+  <div class="camaras" id="camaras">
+    <button class="cam-det" id="btnNew" aria-label="Nueva incidencia con detalles">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M4 8h3l2-3h6l2 3h3v5"/><path d="M4 8v11h8"/><circle cx="12" cy="13" r="3"/><path d="M15 20l1-3 4.5-4.5a1.4 1.4 0 0 1 2 2L18 19z"/></svg>
+      <span>Con detalles</span>
+    </button>
+    <button class="fab" id="btnRapida" aria-label="Foto rápida con ubicación">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>
+      <b class="rayo"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M13 2 4 14h7l-1 8 9-12h-7z"/></svg></b>
+      <span class="fab-lbl">Rápida</span>
+    </button>
+  </div>
 </main>
 
 <nav>
@@ -270,6 +278,7 @@
 </div>
 
 <input type="file" id="inCam" accept="image/*" capture="environment" hidden>
+<input type="file" id="inQuick" accept="image/*" capture="environment" hidden>
 <input type="file" id="inVid" accept="video/*" capture="environment" hidden>
 <input type="file" id="inGal" accept="image/*,video/*" multiple hidden>
 <input type="file" id="inImport" hidden>

@@ -47,15 +47,21 @@ nav button svg{width:24px;height:24px}
 nav button[aria-pressed="true"]{color:var(--ink);font-weight:700}
 nav button[aria-pressed="true"] svg{color:var(--orange)}
 
-.fab{position:absolute;right:max(16px,env(safe-area-inset-right,0px));bottom:18px;z-index:800;width:68px;height:68px;border-radius:50%;
+.camaras{position:absolute;right:max(16px,env(safe-area-inset-right,0px));bottom:26px;z-index:800;display:flex;align-items:center;gap:12px}
+.fab{position:relative;width:68px;height:68px;border-radius:50%;flex:none;
   border:0;background:var(--orange);color:var(--orange-ink);display:grid;place-items:center;box-shadow:0 6px 18px rgba(0,0,0,.28)}
+.fab .rayo{position:absolute;top:-3px;right:-3px;width:24px;height:24px;border-radius:50%;background:var(--leaf);color:#ffd43b;display:grid;place-items:center;border:2px solid var(--panel)}
+.fab .rayo svg{width:13px;height:13px}
+.fab-lbl{position:absolute;bottom:-17px;left:50%;transform:translateX(-50%);font-size:.72rem;font-weight:700;color:var(--ink);background:var(--panel);padding:0 7px;border-radius:999px;box-shadow:0 1px 4px rgba(0,0,0,.2);white-space:nowrap}
+.cam-det{display:flex;align-items:center;gap:7px;height:46px;padding:0 14px 0 11px;border-radius:999px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font-weight:700;font-size:.9rem;box-shadow:0 3px 10px rgba(0,0,0,.2);white-space:nowrap}
+.cam-det svg{width:22px;height:22px;flex:none}
 .fab svg{width:32px;height:32px}
 .map-btn{position:absolute;right:max(20px,calc(env(safe-area-inset-right,0px) + 4px));z-index:800;width:52px;height:52px;border-radius:14px;border:1px solid var(--line);
   background:var(--panel);color:var(--ink);display:grid;place-items:center;box-shadow:0 3px 10px rgba(0,0,0,.18)}
 .map-btn svg{width:24px;height:24px}
 .map-btn[aria-pressed="true"]{color:#1c7ed6;border-color:#1c7ed6}
-#btnLocate{bottom:100px}
-#btnFit{bottom:162px}
+#btnLocate{bottom:112px}
+#btnFit{bottom:174px}
 
 /* Leaflet */
 .leaflet-control-layers{font-family:var(--font);border-radius:12px!important}
@@ -242,5 +248,6 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 .vprev{left:max(8px,env(safe-area-inset-left,0px));top:50%;transform:translateY(-50%)}
 .vnext{right:max(8px,env(safe-area-inset-right,0px));top:50%;transform:translateY(-50%)}
 .vcount{position:absolute;left:50%;transform:translateX(-50%);bottom:calc(16px + env(safe-area-inset-bottom,0px));color:#fff;font-size:.95rem;font-variant-numeric:tabular-nums}
-.toast{position:fixed;left:50%;bottom:calc(90px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2100;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem;max-width:90vw;text-align:center}
+.toast button{margin-left:10px;border:0;background:var(--orange);color:var(--orange-ink);font-weight:700;border-radius:999px;padding:4px 12px}
+.toast{position:fixed;left:50%;bottom:calc(172px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2100;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem;max-width:90vw;text-align:center}
 @media (prefers-reduced-motion:no-preference){.sheet .panel{animation:up .18s ease-out}@keyframes up{from{transform:translateY(30px);opacity:.6}}}

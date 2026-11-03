@@ -71,7 +71,7 @@ function empezarDibujo(base) {
     poly: L.polygon([], { color: '#ffd43b', weight: 3, dashArray: '6 6', fillOpacity: .18, interactive: false }).addTo(map),
     marks: L.layerGroup().addTo(map)
   };
-  $('#drawBanner').hidden = false; $('#btnNew').hidden = true; map.getContainer().style.cursor = 'crosshair';
+  $('#drawBanner').hidden = false; $('#camaras').hidden = true; map.getContainer().style.cursor = 'crosshair';
   map.on('click', clickDibujo);
   if (base?.puntos?.length) map.fitBounds(L.latLngBounds(base.puntos), { padding: [40, 40], maxZoom: 19 });
   pintarDibujo();
@@ -89,7 +89,7 @@ function pintarDibujo() {
 }
 function salirDibujo() {
   map.off('click', clickDibujo); draw.poly.remove(); draw.marks.remove();
-  $('#drawBanner').hidden = true; $('#btnNew').hidden = vistaActual !== 'mapa' && vistaActual !== 'lista'; map.getContainer().style.cursor = '';
+  $('#drawBanner').hidden = true; $('#camaras').hidden = vistaActual !== 'mapa' && vistaActual !== 'lista'; map.getContainer().style.cursor = '';
   const d = draw; draw = null; return d;
 }
 $('#drawUndo').onclick = () => { draw.pts.pop(); pintarDibujo(); };

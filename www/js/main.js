@@ -5,7 +5,7 @@ function vista(v) {
   vistaActual = v;
   for (const [k, sel] of Object.entries(VISTAS)) if (sel) $(sel).hidden = k !== v;
   $$('nav button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
-  $('#btnNew').hidden = !(v === 'mapa' || v === 'lista');
+  $('#camaras').hidden = !(v === 'mapa' || v === 'lista');
   $('#btnFit').hidden = $('#btnLocate').hidden = v !== 'mapa';
   if (v === 'mapa') setTimeout(() => map.invalidateSize(), 50);
   if (v === 'lista') renderInc();

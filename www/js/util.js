@@ -25,8 +25,12 @@ const fmtNum = (n, d = 2) => n == null ? '' : n.toLocaleString('es-ES', { maximu
 const hashId = s => { let h = 7; for (const c of String(s)) h = (h * 31 + c.charCodeAt(0)) | 0; return (Math.abs(h) % 2000000000) + 1; };
 const debounce = (fn, ms) => { let t; return (...a) => { clearTimeout(t); t = setTimeout(() => fn(...a), ms); }; };
 
-function toast(msg, ms = 2600) {
+function toast(msg, ms = 2600, accion = null) {
   const t = $('#toast'); t.textContent = msg; t.hidden = false;
+  if (accion) {
+    const b = document.createElement('button'); b.textContent = accion.texto;
+    b.onclick = e => { e.stopPropagation(); t.hidden = true; accion.fn(); }; t.appendChild(b);
+  }
   clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, ms);
 }
 
