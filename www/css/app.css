@@ -22,6 +22,10 @@ button:disabled{opacity:.45;cursor:default}
 header{background:var(--leaf);color:var(--leaf-ink);display:flex;align-items:center;gap:10px;
   padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) 10px max(16px,env(safe-area-inset-left,0px))}
 header h1{margin:0;font-size:1.2rem;letter-spacing:.01em;display:flex;align-items:center;gap:8px;white-space:nowrap}
+.finca-btn{display:flex;align-items:center;gap:8px;min-width:0;border:0;background:none;color:inherit;font-weight:700;font-size:1.15rem;padding:4px 2px;flex:0 1 auto}
+.finca-btn #fincaNom{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.finca-btn svg{width:18px;height:18px;flex:none;opacity:.8}
+.finca-btn .dot,.bienv-logo .dot{width:14px;height:14px;border-radius:50%;background:var(--orange);box-shadow:inset -3px -3px 0 rgba(0,0,0,.18);flex:none}
 header h1 .dot{width:14px;height:14px;border-radius:50%;background:var(--orange);box-shadow:inset -3px -3px 0 rgba(0,0,0,.18)}
 #count{margin-left:auto;font-size:.85rem;opacity:.85;font-variant-numeric:tabular-nums;white-space:nowrap;min-width:0;overflow:hidden;text-overflow:ellipsis}
 @media (max-width:420px){header:has(#syncOff:not([hidden])) #count{display:none}header:has(#syncOff:not([hidden])) .sync-off{margin-left:auto}}
@@ -175,6 +179,7 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 .sheet .panel > *,#syLogin > *{min-width:0}
 #syLogin{grid-template-columns:minmax(0,1fr)}
 .sheet.center{align-items:center;padding:16px}
+#confirm{z-index:1950}
 .sheet.center .panel{border-radius:18px;max-width:420px}
 .sheet h2{margin:0;font-size:1.2rem}
 .field{display:grid;gap:6px;min-width:0}
@@ -290,5 +295,43 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 .noche #map{background:#050805}
 .ver-banner{position:absolute;left:max(12px,env(safe-area-inset-left,0px));right:76px;top:12px;z-index:820;margin-left:46px;background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 3px 10px rgba(0,0,0,.2);display:flex;align-items:center;gap:8px;padding:6px 6px 6px 12px;font-size:.85rem}
 .ver-banner span{flex:1;min-width:0}
+/* Bienvenida */
+.bienv{position:fixed;inset:0;z-index:1800;background:var(--leaf);overflow:auto;
+  padding:calc(28px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.bienv-in{max-width:440px;margin:0 auto;display:grid;gap:16px}
+.bienv-logo{display:flex;align-items:center;gap:10px;color:#fff;font-weight:700;font-size:2rem;letter-spacing:-.01em}
+.bienv-logo .dot{width:22px;height:22px}
+.bienv-sub{color:#fff;opacity:.85;margin:-6px 0 4px;font-size:1.02rem}
+.bienv-card{background:var(--panel);color:var(--ink);border-radius:18px;padding:16px;display:grid;gap:14px;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+.bienv-card h2{margin:0;font-size:1.2rem}
+.bienv-sep{text-align:center;color:var(--muted);font-size:.85rem;position:relative}
+.bienv-local{color:#fff!important;justify-self:center;opacity:.9}
+.fcard{display:flex;align-items:center;gap:12px;text-align:left;width:100%;border:1px solid var(--line);background:var(--bg);border-radius:14px;padding:12px}
+.fcard b{display:block;font-size:1.05rem}
+.fcard .grow{flex:1;min-width:0}
+.fcard[aria-current="true"]{border-color:var(--leaf);box-shadow:0 0 0 2px var(--leaf) inset}
+.fcard svg{width:20px;height:20px;flex:none;color:var(--muted)}
+.rol{display:inline-block;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;padding:2px 8px;border-radius:999px;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.rol.dueno{background:var(--orange-soft,#fff1e0);border-color:var(--orange);color:#8a4a00}
+/* Equipo */
+.codigo-box{display:grid;gap:8px;background:var(--bg);border:1px dashed var(--orange);border-radius:14px;padding:12px}
+.codigo{font-size:2.2rem;font-weight:700;letter-spacing:.3em;font-variant-numeric:tabular-nums;color:var(--leaf);user-select:all;-webkit-user-select:all}
+.miembro{display:grid;grid-template-columns:1fr auto;gap:6px 10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.miembro .acc{grid-column:1/-1;display:flex;gap:6px;flex-wrap:wrap}
+.miembro .acc .btn{flex:1}
+/* Historial */
+.hlist{display:grid;gap:6px}
+.hdia{font-size:.78rem;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:10px 0 2px}
+.hitem{display:grid;grid-template-columns:30px 1fr auto;gap:10px;align-items:center;text-align:left;width:100%;border:1px solid var(--line);background:var(--panel);border-radius:12px;padding:9px 11px}
+.hitem .ic{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;color:#fff;font-weight:700;font-size:.9rem}
+.hitem .ic.crear{background:#2f9e44}.hitem .ic.editar{background:#1c7ed6}.hitem .ic.borrar{background:#e03131}.hitem .ic.restaurar{background:#ae3ec9}
+.hitem .tx{min-width:0;font-size:.92rem;overflow-wrap:anywhere}
+.hitem .hora{font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.difs{display:grid;gap:6px}
+.dif{border:1px solid var(--line);border-radius:10px;padding:8px 10px;font-size:.9rem}
+.dif .k{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}
+.dif .a{color:var(--danger);text-decoration:line-through;overflow-wrap:anywhere}
+.dif .b{color:var(--ok);overflow-wrap:anywhere}
+.por{font-size:.8rem;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:calc(172px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2100;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem;max-width:90vw;text-align:center}
 @media (prefers-reduced-motion:no-preference){.sheet .panel{animation:up .18s ease-out}@keyframes up{from{transform:translateY(30px);opacity:.6}}}

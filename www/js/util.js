@@ -35,9 +35,10 @@ function toast(msg, ms = 2600, accion = null) {
 }
 
 /* Confirmación dentro de la app (sin diálogos del sistema) */
-function confirmar(texto, { titulo = '¿Seguro?', ok = 'Borrar' } = {}) {
+function confirmar(texto, { titulo = '¿Seguro?', ok = 'Borrar', peligro = /borrar|quitar|salir|cerrar sesi/i.test(ok) } = {}) {
   return new Promise(res => {
     $('#cfTitle').textContent = titulo; $('#cfText').textContent = texto; $('#cfYes').textContent = ok;
+    $('#cfYes').className = 'btn ' + (peligro ? 'danger' : 'primary');
     const fin = v => { $('#confirm').hidden = true; $('#cfYes').onclick = $('#cfNo').onclick = null; res(v); };
     $('#cfYes').onclick = () => fin(true); $('#cfNo').onclick = () => fin(false);
     $('#confirm').onclick = e => { if (e.target.id === 'confirm') fin(false); };
@@ -205,12 +206,12 @@ $('#viewer').addEventListener('click', e => { if ((e.target.id === 'viewer' || e
   V.addEventListener('wheel', e => { if (!zoom.img) return; e.preventDefault(); zoom.s = Math.max(1, Math.min(6, zoom.s * (e.deltaY < 0 ? 1.15 : 1 / 1.15))); aplicarZoom(); }, { passive: false });
 })();
 
-/* Guardar la foto o el vídeo que se está viendo en Documentos › LasLargas (o compartirlo) */
+/* Guardar la foto o el vídeo que se está viendo en Documentos › CampControl (o compartirlo) */
 $('#vGuardar').onclick = async e => {
   e.stopPropagation();
   const m = vList[vIdx], b = mBlob(m); if (!b) return;
   const ext = ((m.type || b.type || '').split('/')[1] || 'jpg').replace('jpeg', 'jpg').replace('quicktime', 'mov').replace(/[^a-z0-9]/gi, '').slice(0, 5);
-  const nombre = `las-largas-${today()}-${(m.id || uid()).slice(0, 8)}.${ext}`;
+  const nombre = `campcontrol-${today()}-${(m.id || uid()).slice(0, 8)}.${ext}`;
   const btn = $('#vGuardar'); btn.disabled = true;
   try { await guardarGrande(nombre, b, isVid(m) ? 'Vídeo guardado' : 'Foto guardada'); }
   catch (err) { toast('No se pudo guardar: ' + (err?.message || err)); }
@@ -221,7 +222,7 @@ async function guardarGrande(nombre, blob, titulo) {
   const FS = plugin('Filesystem');
   if (!FS) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nombre; document.body.appendChild(a); a.click(); a.remove(); toast('Archivo descargado'); return; }
   try { await FS.requestPermissions?.(); } catch (e) {}
-  const T = 3 * 262144; let dir = 'DOCUMENTS', ruta = `LasLargas/${nombre}`, r;
+  const T = 3 * 262144; let dir = 'DOCUMENTS', ruta = `CampControl/${nombre}`, r;
   for (let o = 0; o < blob.size || o === 0; o += T) {
     const data = await blobB64(blob.slice(o, o + T));
     if (o === 0) {
@@ -251,7 +252,7 @@ function selectorRevisar(box, get, set) {
   return pintar;
 }
 
-/* Guardar un archivo (informe, copia): en la APK va a Documentos/LasLargas y se puede compartir */
+/* Guardar un archivo (informe, copia): en la APK va a Documentos/CampControl y se puede compartir */
 async function guardarArchivo(nombre, blob, titulo = 'Archivo guardado') {
   const FS = plugin('Filesystem');
   if (!FS) {
@@ -261,14 +262,14 @@ async function guardarArchivo(nombre, blob, titulo = 'Archivo guardado') {
   const data = await blobB64(blob);
   let r, dir = 'DOCUMENTS';
   try { await FS.requestPermissions?.(); } catch (e) {}
-  try { r = await FS.writeFile({ path: `LasLargas/${nombre}`, data, directory: dir, recursive: true }); }
+  try { r = await FS.writeFile({ path: `CampControl/${nombre}`, data, directory: dir, recursive: true }); }
   catch (e) { dir = 'CACHE'; r = await FS.writeFile({ path: nombre, data, directory: dir }); }
   avisoArchivo({ uri: r.uri, dir, nombre, titulo, detalle: fmtMB(blob.size) });
 }
 function avisoArchivo({ uri, dir, nombre, titulo, detalle }) {
   $('#foTitle').textContent = titulo;
   $('#foText').innerHTML = dir === 'DOCUMENTS'
-    ? `Guardado en <b>Documentos › LasLargas</b> del móvil.<br><span class="hint">${esc(nombre)} · ${esc(detalle)}</span>`
+    ? `Guardado en <b>Documentos › CampControl</b> del móvil.<br><span class="hint">${esc(nombre)} · ${esc(detalle)}</span>`
     : `Archivo listo (${esc(detalle)}). Compártelo para guardarlo en Drive, WhatsApp o el correo.`;
   $('#fileOk').hidden = false;
   $('#foShare').onclick = async () => {

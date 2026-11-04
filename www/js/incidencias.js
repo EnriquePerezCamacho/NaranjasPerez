@@ -73,6 +73,7 @@ function popupEl(it) {
     <h3>${esc(it.titulo)}</h3>
     <div class="meta"><span class="chip" style="--c:${t.c}"><i></i>${t.n}</span><span>${fmtDate(it.fecha)}</span><span class="state ${it.estado}">${it.estado}</span></div>
     ${ub ? `<div class="ubic">${esc(ub)}</div>` : ''}
+    ${it.creadoPor ? `<div class="por">Por ${esc(it.creadoPor)}${it.editadoPor && it.editadoPor !== it.creadoPor ? ` · cambiada por ${esc(it.editadoPor)}` : ''}</div>` : ''}
     ${badgeRevisar(it)}
     ${it.rapida ? '<span class="badge warn" style="margin-top:6px">Foto rápida · pulsa Editar para completar</span>' : ''}
     ${it.desc ? `<p>${esc(it.desc)}</p>` : ''}

@@ -4,7 +4,7 @@ const TROZO = 3 * 196608;
 async function escritorCopia(nombre) {
   const FS = plugin('Filesystem');
   if (!FS) { const partes = []; return { add: async t => { partes.push(t); }, fin: async () => ({ blob: new Blob(partes, { type: 'application/x-ndjson' }) }) }; }
-  let dir = 'DOCUMENTS', ruta = `LasLargas/${nombre}`, empezado = false, buf = '';
+  let dir = 'DOCUMENTS', ruta = `CampControl/${nombre}`, empezado = false, buf = '';
   try { await FS.requestPermissions?.(); } catch (e) {}
   const escribir = async t => {
     if (!empezado) { await FS.writeFile({ path: ruta, data: t, directory: dir, encoding: 'utf8', recursive: true }); empezado = true; }
@@ -26,11 +26,11 @@ const sinSync = ({ _sync, ...r }) => r;
 let exportando = false;
 $('#mExport').onclick = async () => {
   if (exportando) return; exportando = true; $('#menu').hidden = true;
-  const nombre = `las-largas-${today()}-${new Date().toTimeString().slice(0, 5).replace(':', '')}.json`;
+  const nombre = `campcontrol-${(Finca.actual?.nombre || 'finca').toLowerCase().replace(/[^a-z0-9ñ]+/gi, '-')}-${today()}-${new Date().toTimeString().slice(0, 5).replace(':', '')}.json`;
   try {
     const w = await escritorCopia(nombre), inc = vivos('inc');
     let bytes = 0;
-    await w.add(JSON.stringify({ t: 'meta', app: 'las-largas', version: 3, exportado: new Date().toISOString(), n: inc.length }) + '\n');
+    await w.add(JSON.stringify({ t: 'meta', app: 'campcontrol', finca: Finca.actual?.nombre || '', version: 3, exportado: new Date().toISOString(), n: inc.length }) + '\n');
     for (const p of vivos('parcelas')) await w.add(JSON.stringify({ t: 'parcela', rec: sinSync(p) }) + '\n');
     for (const t of vivos('trat')) await w.add(JSON.stringify({ t: 'trat', rec: sinSync(t) }) + '\n');
     for (let k = 0; k < inc.length; k++) {
@@ -59,7 +59,7 @@ $('#inImport').onchange = async e => {
     const n = cab.includes('"t":"meta"') ? await importarLineas(f) : await importarV1(f);
     await cargar(); renderTodo(); encuadrar(false); Notif.reprogramar();
     toast(`Copia importada: ${n.inc} incidencias${n.parc ? `, ${n.parc} parcelas` : ''}${n.trat ? `, ${n.trat} tratamientos` : ''}`, 4000);
-  } catch (err) { console.error(err); toast('Ese archivo no es una copia válida de Las Largas', 4000); }
+  } catch (err) { console.error(err); toast('Ese archivo no es una copia válida de CampControl', 4000); }
 };
 /* Solo sustituye un registro si el de la copia es igual o más reciente */
 async function fusionar(k, rec) {

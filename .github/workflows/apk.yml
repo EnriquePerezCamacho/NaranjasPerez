@@ -71,7 +71,7 @@ jobs:
 
       - name: Número de versión
         run: |
-          sed -i "s/versionCode 1$/versionCode ${{ github.run_number }}/; s/versionName \"1.0\"/versionName \"1.2.${{ github.run_number }}\"/" android/app/build.gradle
+          sed -i "s/versionCode 1$/versionCode ${{ github.run_number }}/; s/versionName \"1.0\"/versionName \"1.3.${{ github.run_number }}\"/" android/app/build.gradle
           grep -n "versionCode\|versionName" android/app/build.gradle
 
       - name: Compilar APK
@@ -83,6 +83,7 @@ jobs:
       - name: Renombrar y comprobar la firma
         run: |
           cp android/app/build/outputs/apk/debug/app-debug.apk las-largas.apk
+          cp las-largas.apk campcontrol.apk
           A=$(keytool -printcert -jarfile las-largas.apk | grep -m1 SHA256 | awk '{print $2}')
           K=$(keytool -list -v -keystore "$RUNNER_TEMP/ll.keystore" -storepass android | grep -m1 SHA256 | awk '{print $2}')
           echo "APK $A"; echo "KEY $K"
@@ -90,14 +91,14 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: las-largas-apk
-          path: las-largas.apk
+          name: campcontrol-apk
+          path: campcontrol.apk
 
       - name: Publicar en Releases (enlace fijo para el móvil)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "v1.0.${{ github.run_number }}" las-largas.apk \
-            --title "Las Largas 1.0.${{ github.run_number }}" \
-            --notes "Descarga las-largas.apk desde el móvil e instálala." \
+          gh release create "v1.0.${{ github.run_number }}" campcontrol.apk las-largas.apk \
+            --title "CampControl 1.3.${{ github.run_number }}" \
+            --notes "Descarga campcontrol.apk desde el móvil e instálala encima de la anterior." \
             --latest

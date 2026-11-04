@@ -1,5 +1,5 @@
 /* Navegación, menú y arranque */
-const VISTAS = { mapa: null, lista: '#listView', parcelas: '#parcView', trat: '#tratView' };
+const VISTAS = { mapa: null, lista: '#listView', parcelas: '#parcView', trat: '#tratView', hist: '#histView' };
 let vistaActual = 'mapa';
 function vista(v) {
   vistaActual = v;
@@ -29,8 +29,9 @@ $$('.sheet').forEach(s => s.addEventListener('click', e => {
 /* Botón "atrás" de Android: cierra lo que esté abierto antes de salir */
 function atras() {
   if (!$('#viewer').hidden) return cerrarVisor(), true;
+  if (!$('#bienv').hidden && Finca.actual) return $('#bvLocal').click(), true;
   if (!$('#confirm').hidden) return $('#cfNo').click(), true;
-  for (const id of ['fileOk', 'recSheet', 'syncSheet', 'infSheet', 'segSheet', 'tratSheet', 'parcSheet']) if (!$('#' + id).hidden) return $('#' + id).hidden = true, true;
+  for (const id of ['fileOk', 'histSheet', 'equipoSheet', 'recSheet', 'syncSheet', 'infSheet', 'segSheet', 'tratSheet', 'parcSheet']) if (!$('#' + id).hidden) return $('#' + id).hidden = true, true;
   if (!$('#sheet').hidden) return cerrarForm(), true;
   if (enDibujo()) return $('#drawCancel').click(), true;
   if (!$('#pickBanner').hidden) return $('#pickCancel').click(), true;
@@ -54,7 +55,8 @@ document.addEventListener('keydown', e => {
   encuadrar(false);
   Notif.init(); Notif.reprogramar();
   Sync.init();
+  Cuenta.init();
   Rec.recuperar();
-  (async () => { let v = ''; try { v = (await plugin('App')?.getInfo())?.version || ''; } catch (e) {} $('#mVer').textContent = 'Las Largas' + (v ? ' · versión ' + v : ''); })();
+  (async () => { let v = ''; try { v = (await plugin('App')?.getInfo())?.version || ''; } catch (e) {} $('#mVer').textContent = 'CampControl' + (v ? ' · versión ' + v : ''); })();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !nativo()) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();

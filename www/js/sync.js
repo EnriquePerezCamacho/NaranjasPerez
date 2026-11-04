@@ -1,7 +1,8 @@
 /* Sincronización entre móviles con Supabase.
    - Todo se guarda primero en el móvil; se sube y se baja cuando hay conexión.
    - Tabla "registros": una fila por incidencia, parcela o tratamiento (datos en JSON).
-   - Fotos y vídeos en el almacenamiento "media", carpeta = id de la incidencia.
+   - Cada fila lleva el id de su finca; el servidor solo deja ver y tocar las fincas de las que eres miembro.
+   - Fotos y vídeos en el almacenamiento "media", carpeta = id de la finca / id de la incidencia.
    - Si los dos editan lo mismo, gana el último cambio guardado. */
 const Sync = (() => {
   const ls = k => { try { return localStorage.getItem(k) || ''; } catch (e) { return ''; } };
@@ -38,6 +39,7 @@ const Sync = (() => {
   function punto(e) {
     const d = $('#syncDot'), sin = e === 'off';
     $('#syncOff').hidden = !sin || !(cfg().url && cfg().key); d.hidden = sin;
+    $('#syncOff').textContent = usuario ? 'Elegir finca' : 'Sin conectar';
     d.className = 'sync-dot ' + (e === 'busy' ? 'busy' : e === 'ok' ? 'ok' : e === 'err' ? 'err' : '');
     d.title = e === 'ok' ? 'Sincronizado' : e === 'busy' ? 'Sincronizando…' : e === 'err' ? 'Error de sincronización' : '';
   }
@@ -52,7 +54,7 @@ const Sync = (() => {
     return d;
   }
   const errores = new Map(); // id -> motivo del último fallo
-  const nombreError = m => /abort/i.test(m) ? 'La subida tardó demasiado (conexión lenta)' : /fetch|network/i.test(m) ? 'Sin conexión con el servidor' : m;
+  const nombreError = m => /abort/i.test(m) ? 'La subida tardó demasiado (conexión lenta)' : /fetch|network/i.test(m) ? 'Sin conexión con el servidor' : /row-level security|42501|permission denied/i.test(m) ? 'Sin permiso en esta finca (¿te han quitado del equipo?)' : m;
   const mediaPendiente = it => !it.borrado && todaMedia(it).some(m => !m.path && m.blob && !m.soloLocal && m.blob.size <= MAX_SUBIDA);
   async function subirMedia(c, it) {
     let cambio = false;
@@ -60,23 +62,24 @@ const Sync = (() => {
       if (m.path || !m.blob) continue;
       if (m.blob.size > MAX_SUBIDA) { if (!m.soloLocal) { m.soloLocal = true; cambio = true; } continue; }
       const ext = ((m.type || '').split('/')[1] || 'bin').replace('jpeg', 'jpg').replace('quicktime', 'mov').replace(/[^a-z0-9]/gi, '').slice(0, 5) || 'bin';
-      const path = `${it.id}/${m.id}.${ext}`;
+      const path = `${Finca.id()}/${it.id}/${m.id}.${ext}`;
       const { error } = await c.storage.from('media').upload(path, m.blob, { contentType: m.type || 'application/octet-stream', upsert: true });
       if (error) throw new Error('Subiendo fotos: ' + error.message);
       m.path = path; cambio = true;
     }
     return cambio;
   }
-  const fila = (k, r) => ({ tabla: k, id: r.id, datos: r.borrado ? null : limpio(k, r), borrado: !!r.borrado, actualizado: r.actualizado || Date.now(), autor: ls('autor') || usuario?.email || null });
+  const fila = (k, r) => ({ finca_id: Finca.id(), tabla: k, id: r.id, datos: r.borrado ? null : limpio(k, r), borrado: !!r.borrado, actualizado: r.actualizado || Date.now(), autor: ls('autor') || usuario?.email || null });
+  const CONFLICTO = { onConflict: 'finca_id,tabla,id' };
   async function enviarFilas(c, k, lote) {
     // Primero en bloque; si el bloque falla, uno a uno para que un registro malo no frene a los demás
-    const { error } = await c.from('registros').upsert(lote.map(r => fila(k, r)), { onConflict: 'tabla,id' });
+    const { error } = await c.from('registros').upsert(lote.map(r => fila(k, r)), CONFLICTO);
     if (!error) return lote;
     if (/fetch|network|abort/i.test(error.message) || /JWT|auth/i.test(error.message)) throw new Error(error.message);
     const ok = [];
     for (const r of lote) {
-      const { error: e1 } = await c.from('registros').upsert([fila(k, r)], { onConflict: 'tabla,id' });
-      if (e1) errores.set(r.id, e1.message); else ok.push(r);
+      const { error: e1 } = await c.from('registros').upsert([fila(k, r)], CONFLICTO);
+      if (e1) errores.set(r.id, nombreError(e1.message)); else ok.push(r);
     }
     return ok;
   }
@@ -93,20 +96,21 @@ const Sync = (() => {
       if (ch) await DB.put('inc', it);
     }
     // 1) Los datos (rápido): así las incidencias llegan aunque sus fotos tarden
+    const llegaron = new Set();
     for (const k of ['parcelas', 'trat', 'inc']) {
       const sucios = S[k].filter(r => r._sync);
       for (let i = 0; i < sucios.length; i += 50) {
         const enviados = await enviarFilas(c, k, sucios.slice(i, i + 50));
-        for (const r of enviados) { await marcarSubido(k, r); if (k === 'inc' && r.borrado) borrarArchivos(c, r.id); }
+        for (const r of enviados) { llegaron.add(k + ':' + r.id); await marcarSubido(k, r); } // las fotos de lo borrado se conservan para poder recuperarlo
       }
     }
     // 2) Las fotos y vídeos, de uno en uno; si uno falla se pasa al siguiente
     let fallos = 0;
-    for (const it of S.inc.filter(r => r._sync && !r.borrado)) {
+    for (const it of S.inc.filter(r => r._sync && !r.borrado && llegaron.has('inc:' + r.id))) {
       try {
         if (await subirMedia(c, it)) {
           await DB.put('inc', it);
-          const { error } = await c.from('registros').upsert([fila('inc', it)], { onConflict: 'tabla,id' });
+          const { error } = await c.from('registros').upsert([fila('inc', it)], CONFLICTO);
           if (error) throw new Error(error.message);
         }
         await marcarSubido('inc', it);
@@ -115,15 +119,10 @@ const Sync = (() => {
         if (/JWT|auth/i.test(e?.message || '')) throw e;
       }
     }
+    const sinSubir = ['parcelas', 'trat', 'inc'].reduce((n, k) => n + S[k].filter(r => r._sync && !llegaron.has(k + ':' + r.id)).length, 0);
+    if (sinSubir) return `${plural(sinSubir, 'cambio', 'cambios')} sin poder enviar (se reintentará)`;
     return fallos ? `${fallos} incidencia${fallos > 1 ? 's' : ''} con fotos o vídeos sin subir (se reintentará)` : '';
   }
-  async function borrarArchivos(c, id) {
-    try {
-      const { data } = await c.storage.from('media').list(id);
-      if (data?.length) await c.storage.from('media').remove(data.map(f => `${id}/${f.name}`));
-    } catch (e) {}
-  }
-
   /* ---------- Bajar ---------- */
   async function aplicar(row) {
     const k = row.tabla; if (!S[k]) return false;
@@ -162,7 +161,7 @@ const Sync = (() => {
     let cursor = (await DB.getMeta('sbCursor')) || '1970-01-01T00:00:00.000Z', n = 0;
     const desde = new Date(new Date(cursor).getTime() - 120000).toISOString(); // margen por si llegan desordenados
     for (let from = 0; ; from += 500) {
-      const { data, error } = await c.from('registros').select('*').gt('servidor', desde).order('servidor', { ascending: true }).range(from, from + 499);
+      const { data, error } = await c.from('registros').select('*').eq('finca_id', Finca.id()).gt('servidor', desde).order('servidor', { ascending: true }).range(from, from + 499);
       if (error) throw new Error(error.message);
       for (const row of data) { if (await aplicar(row)) n++; if (row.servidor > cursor) cursor = row.servidor; }
       if (data.length < 500) break;
@@ -199,11 +198,19 @@ const Sync = (() => {
   async function sincronizar(manual = false) {
     if (ocupado) { otraVez = true; return; }
     const c = await cliente().catch(() => null); if (!c) { punto('off'); return; }
-    if (!(await sesion())) { punto('off'); if (manual) abrir(); return; }
+    if (!(await sesion()) || !Finca.id()) { punto('off'); if (manual) Cuenta.abrir(); return; }
     if (!navigator.onLine) { punto('err'); ultimoError = 'Sin conexión'; if (manual) toast('Sin conexión: se sincronizará cuando vuelva'); return; }
     ocupado = true; punto('busy');
     try {
-      const aviso = await subir(c);
+      let aviso = await subir(c);
+      if ([...errores.values()].some(m => /Sin permiso/.test(m))) {
+        // ¿sigue siendo miembro?
+        const { data } = await c.rpc('mis_fincas');
+        if (data && !data.some(f => f.id === Finca.id())) {
+          ultimoError = `Ya no formas parte de «${Finca.actual.nombre}»`; punto('err');
+          toast(`Ya no formas parte de «${Finca.actual.nombre}». Elige otra finca`, 6000); Cuenta.abrir(); return;
+        }
+      }
       const n = await bajar(c);
       if (n) { renderTodo(); Notif.reprogramar(); }
       bajarFotos(c); // descarga automática de fotos y vídeos del otro móvil, siempre
@@ -211,7 +218,8 @@ const Sync = (() => {
       if (manual) toast(aviso ? 'Sincronizado, pero ' + aviso.charAt(0).toLowerCase() + aviso.slice(1) : n ? `Sincronizado: ${n} cambio${n > 1 ? 's' : ''} recibido${n > 1 ? 's' : ''}` : 'Sincronizado: todo al día', aviso ? 5000 : 2600);
     } catch (e) {
       const m = e?.message || String(e);
-      ultimoError = /registros|PGRST205|relation .* does not exist|schema cache/i.test(m) ? 'Falta preparar el servidor (las tablas de Supabase)'
+      ultimoError = /finca_id|registros|PGRST20|relation .* does not exist|schema cache|function/i.test(m) ? 'Falta actualizar el servidor (multifinca.sql)'
+        : /row-level security|permission|violates/i.test(m) ? 'Ya no eres miembro de esta finca o no tienes permiso'
         : /bucket|not found/i.test(m) && /foto/i.test(m) ? 'Falta preparar el servidor (el almacenamiento de fotos)'
         : nombreError(m);
       punto('err');
@@ -234,28 +242,24 @@ const Sync = (() => {
   /* ---------- Pantalla de sincronización ---------- */
   function pintarEstado() {
     if ($('#syncSheet').hidden) return;
-    const { url, key } = cfg(), p = pendientes();
-    $('#syServer').open = !(url && key);
-    $('#syUrl').value = url; $('#syKey').value = key;
+    const p = pendientes(), f = Finca.actual;
     $('#syNombre').value = ls('autor');
-    const dentro = !!usuario;
-    $('#syLogin').hidden = dentro; $('#sySalir').hidden = !dentro;
-    $('#syOk').textContent = dentro ? 'Sincronizar ahora' : 'Entrar';
-    $('#syCerrar').textContent = dentro ? 'Cerrar' : 'Ahora no';
-    $('#syTitle').textContent = dentro ? 'Compartir con otro móvil' : 'Entra para compartir los datos';
-    $('#syEstado').innerHTML = !dentro
-      ? (url && key ? '<b>Este móvil todavía no comparte nada.</b><br>Entra con el correo y la contraseña que creaste en Supabase. Desde ese momento lo que apuntes aquí le llegará al otro móvil, y lo del otro te llegará a ti.' : 'Faltan los datos del servidor.')
-      : `Conectado como <b>${esc(usuario.email)}</b><br>` +
+    $('#syEstado').innerHTML = !usuario || !Finca.id()
+      ? '<b>Este móvil no comparte nada.</b><br>Entra con tu cuenta y elige una finca para compartir los datos con tu equipo.'
+      : `Finca <b>${esc(f.nombre)}</b> · ${f.rol === 'dueno' ? 'dueño' : 'trabajador'}<br>Cuenta <b>${esc(usuario.email)}</b><br>` +
         (ocupado ? 'Sincronizando…' : ultimoError ? `<span style="color:var(--danger)">Último intento: ${esc(ultimoError)}</span>` : ultima ? `Última sincronización: ${new Date(ultima).toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' })}` : 'Aún no se ha sincronizado') +
         `<br><span class="hint">${p ? `${p} cambio${p > 1 ? 's' : ''} pendiente${p > 1 ? 's' : ''} de subir` : 'Nada pendiente de subir'}</span>`;
+    const dentro = !!usuario && !!Finca.id();
     const lista = dentro ? ['inc', 'parcelas', 'trat'].flatMap(k => S[k].filter(r => r._sync).map(r => ({ k, r }))) : [];
     $('#syPend').hidden = !lista.length;
     $('#syPend').innerHTML = lista.length ? `<b>Pendiente de subir</b>` + lista.slice(0, 12).map(({ k, r }) => {
-      const nom = r.borrado ? 'Borrado' : k === 'inc' ? r.titulo : k === 'parcelas' ? 'Parcela: ' + r.nombre : 'Tratamiento: ' + r.producto;
+      const nom = r.borrado ? 'Borrado' : k === 'inc' ? r.titulo : k === 'parcelas' ? 'Parcela: ' + r.nombre : 'Tratamiento: ' + (r.producto || 'recorrido');
       const mot = errores.get(r.id) || (k === 'inc' && mediaPendiente(r) ? 'Faltan fotos o vídeos por subir' : 'En espera');
       return `<div class="small">• ${esc(nom || 'Sin título')} <span style="color:${errores.has(r.id) ? 'var(--danger)' : 'var(--muted)'}">— ${esc(mot)}</span></div>`;
     }).join('') + (lista.length > 12 ? `<div class="small">y ${lista.length - 12} más…</div>` : '') : '';
-    $('#syArreglar').hidden = !dentro;
+    $('#syArreglar').hidden = !dentro; $('#syOk').hidden = !dentro;
+    $('#sySalir').hidden = !usuario; $('#syEntrar').hidden = !!usuario && !!Finca.id();
+    $('#syEntrar').textContent = usuario ? 'Elegir finca' : 'Entrar o crear cuenta';
   }
   async function abrir() {
     $('#menu').hidden = true; $('#syncSheet').hidden = false;
@@ -263,44 +267,24 @@ const Sync = (() => {
   }
   $('#mCuenta').onclick = abrir;
   $('#syncDot').onclick = abrir;
-  $('#syncOff').onclick = abrir;
+  $('#syncOff').onclick = () => Cuenta.abrir();
+  $('#syEntrar').onclick = () => { $('#syncSheet').hidden = true; Cuenta.abrir(); };
   $('#syReenviar').onclick = async () => {
-    if (!(await confirmar('Se volverá a enviar todo lo que hay en este móvil. Úsalo si el otro móvil no ve alguna incidencia. Puede tardar si hay muchas fotos.', { titulo: 'Reenviar todo', ok: 'Reenviar' }))) return;
+    if (!(await confirmar('Se volverá a enviar todo lo que hay en este móvil. Úsalo si a otro miembro le falta algo. Puede tardar si hay muchas fotos.', { titulo: 'Reenviar todo', ok: 'Reenviar' }))) return;
     for (const k of ['inc', 'parcelas', 'trat']) { S[k].forEach(r => r._sync = 1); await DB.putMany(k, S[k]); }
     toast('Reenviando todo…'); await sincronizar(true);
   };
   $('#syRecibir').onclick = async () => {
     await DB.setMeta('sbCursor', null); toast('Pidiendo todo al servidor…'); await sincronizar(true);
   };
-  $('#syCerrar').onclick = () => { lsSet('autor', $('#syNombre').value.trim()); $('#syncSheet').hidden = true; };
-  $('#sySalir').onclick = async () => {
-    if (!(await confirmar('Los datos se quedan en este móvil, pero dejarán de compartirse hasta que vuelvas a entrar.', { titulo: 'Cerrar sesión', ok: 'Cerrar sesión' }))) return;
-    try { await (await cliente())?.auth.signOut(); } catch (e) {}
-    usuario = null; punto('off'); pintarEstado();
+  const guardarNombre = () => {
+    const n = $('#syNombre').value.trim(); if (n === ls('autor')) return;
+    lsSet('autor', n);
+    if (Finca.id()) cliente().then(async c => { await c?.rpc('mi_nombre', { f: Finca.id(), p_nombre: n }); }).catch(() => {});
   };
-  $('#syncForm').addEventListener('submit', async e => {
-    e.preventDefault();
-    lsSet('autor', $('#syNombre').value.trim());
-    if (usuario) { await sincronizar(true); return; }
-    const url = $('#syUrl').value.trim(), key = $('#syKey').value.trim(), email = $('#syEmail').value.trim(), pass = $('#syPass').value;
-    if (!/^https?:\/\/.+/.test(url) || key.length < 20) { toast('Revisa la dirección y la clave del servidor'); $('#syServer').open = true; return; }
-    if (!email || !pass) { toast('Escribe tu correo y contraseña'); return; }
-    if (!$('#syNombre').value.trim()) { toast('Escribe tu nombre (sale en las notas)'); $('#syNombre').focus(); return; }
-    if (url !== (window.LL_CONFIG?.url || '')) lsSet('sbUrl', url); else lsSet('sbUrl', '');
-    if (key !== (window.LL_CONFIG?.key || '')) lsSet('sbKey', key); else lsSet('sbKey', '');
-    const btn = $('#syOk'); btn.disabled = true; btn.textContent = 'Entrando…';
-    try {
-      const c = await cliente();
-      const { data, error } = await c.auth.signInWithPassword({ email, password: pass });
-      if (error) throw error;
-      usuario = data.user; $('#syPass').value = '';
-      toast('Sesión iniciada. Sincronizando…'); pintarEstado();
-      await sincronizar(true);
-    } catch (err) {
-      const m = String(err?.message || err);
-      toast(/invalid login/i.test(m) ? 'Correo o contraseña incorrectos' : /fetch|network/i.test(m) ? 'No se pudo conectar con el servidor' : 'No se pudo entrar: ' + m, 5000);
-    } finally { btn.disabled = false; pintarEstado(); }
-  });
+  $('#syCerrar').onclick = () => { guardarNombre(); $('#syncSheet').hidden = true; };
+  $('#syncForm').addEventListener('submit', async e => { e.preventDefault(); guardarNombre(); await sincronizar(true); });
+  $('#sySalir').onclick = () => Cuenta.salir();
 
   async function init() {
     alCambiar.push(() => { pronto(); });
@@ -312,10 +296,8 @@ const Sync = (() => {
     if (!(url && key)) return;
     let dentro = false;
     try { dentro = !!(await sesion()); } catch (e) {}
-    if (dentro) { punto('ok'); sincronizar(); return; }
-    punto('off');
-    // Primera vez sin cuenta: se abre la pantalla de entrar. Si pulsa "Ahora no", no vuelve a salir sola (queda el aviso arriba).
-    if (!ls('syncPreguntado')) { lsSet('syncPreguntado', '1'); abrir(); }
+    if (dentro && Finca.id()) { punto('ok'); sincronizar(); } else punto('off');
   }
-  return { init, sincronizar, abrir, descargarUno, pendientes, conectado: () => !!usuario, error: id => errores.get(id) };
+  return { init, sincronizar, abrir, descargarUno, pendientes, cliente, sesion, punto,
+    usuario: () => usuario, setUsuario: u => { usuario = u; }, conectado: () => !!usuario && !!Finca.id(), error: id => errores.get(id) };
 })();

@@ -69,7 +69,7 @@ function tablasInforme(d) {
 }
 const nombreInforme = (d, ext) => {
   const p = d.pid ? '-' + (nombreParcela(d.pid) || 'parcela').toLowerCase().replace(/[^a-z0-9ñáéíóú]+/gi, '-') : '';
-  return `informe-las-largas${p}-${d.desde}_${d.hasta}.${ext}`;
+  return `informe-campcontrol${p}-${d.desde}_${d.hasta}.${ext}`;
 };
 
 async function informeExcel() {
@@ -102,7 +102,7 @@ async function informePdf() {
     const W = doc.internal.pageSize.getWidth();
     doc.setFillColor(31, 61, 43); doc.rect(0, 0, W, 22, 'F');
     doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(16);
-    doc.text('Las Largas · Informe', 12, 14);
+    doc.text(`${Finca.actual?.local ? 'CampControl' : Finca.actual?.nombre || 'CampControl'} · Informe`, 12, 14);
     doc.setFont('helvetica', 'normal'); doc.setFontSize(10);
     doc.text(`Del ${fmtDMY(d.desde)} al ${fmtDMY(d.hasta)}${d.pid ? ' · ' + nombreParcela(d.pid) : ''}`, W - 12, 14, { align: 'right' });
     doc.setTextColor(27, 42, 31);

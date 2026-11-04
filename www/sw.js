@@ -1,9 +1,11 @@
 // Guarda la app y los trozos de mapa ya vistos para poder usarla en el campo con poca cobertura.
-const APP = 'naranjal-app-v4';
-const TILES = 'naranjal-mapas-v1';
+// Solo se guardan los archivos de la propia app y trozos de mapa medibles (nunca respuestas del servidor de datos).
+const APP = 'campcontrol-app-v5';
+const TILES = 'campcontrol-mapas-v2';
+const MAX_TILES = 3000;
+const JS = ['util', 'finca', 'db', 'map', 'notif', 'incidencias', 'parcelas', 'tratamientos', 'recorrido', 'informes', 'backup', 'config', 'sync', 'cuenta', 'main'];
 const SHELL = ['./', './index.html', './manifest.webmanifest', './icon-192.png', './icon-512.png', './css/app.css',
-  './leaflet/leaflet.css', './leaflet/leaflet.js',
-  ...['util', 'db', 'map', 'notif', 'incidencias', 'parcelas', 'tratamientos', 'recorrido', 'informes', 'backup', 'config', 'sync', 'main'].map(n => `./js/${n}.js`)];
+  './leaflet/leaflet.css', './leaflet/leaflet.js', ...JS.map(n => `./js/${n}.js`)];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(APP).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -13,7 +15,13 @@ self.addEventListener('activate', e => {
     .then(() => self.clients.claim()));
 });
 
-const esMapa = url => /arcgisonline|ign\.es|openstreetmap|opentopomap|catastro/.test(url.hostname);
+const esMapa = url => /arcgisonline|ign\.es|openstreetmap|opentopomap/.test(url.hostname);
+let podando = false;
+async function podar(c) {
+  if (podando) return; podando = true;
+  try { const ks = await c.keys(); if (ks.length > MAX_TILES) await Promise.all(ks.slice(0, ks.length - MAX_TILES).map(k => c.delete(k))); }
+  finally { podando = false; }
+}
 
 self.addEventListener('fetch', e => {
   const req = e.request;
@@ -21,19 +29,26 @@ self.addEventListener('fetch', e => {
   const url = new URL(req.url);
 
   if (esMapa(url)) {
-    // Mapas: primero caché (rápido y sin cobertura), si no, red y se guarda.
+    // Mapas: primero caché; si no, se pide con CORS para poder guardarlo sin que ocupe de más
     e.respondWith(caches.open(TILES).then(async c => {
-      const hit = await c.match(req);
+      const hit = await c.match(req.url);
       if (hit) return hit;
-      try { const r = await fetch(req); if (r.ok || r.type === 'opaque') c.put(req, r.clone()); return r; }
-      catch (err) { return new Response('', { status: 504 }); }
+      try {
+        const r = await fetch(req.url, { mode: 'cors', credentials: 'omit' });
+        if (r.ok) { c.put(req.url, r.clone()).then(() => podar(c)).catch(() => {}); }
+        return r;
+      } catch (err) {
+        try { return await fetch(req); } catch (e2) { return new Response('', { status: 504 }); }
+      }
     }));
     return;
   }
 
+  if (url.origin !== self.location.origin) return; // servidor de datos, fuentes…: sin caché
+
   // App: red primero (para recibir cambios), caché si no hay conexión.
   e.respondWith(fetch(req).then(r => {
-    if (r.ok) { const copy = r.clone(); caches.open(APP).then(c => c.put(req, copy)); }
+    if (r.ok && r.type === 'basic') { const copy = r.clone(); caches.open(APP).then(c => c.put(req, copy)).catch(() => {}); }
     return r;
   }).catch(() => caches.match(req).then(h => h || caches.match('./index.html'))));
 });

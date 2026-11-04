@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1f3d2b">
-<title>Las Largas</title>
+<title>CampControl</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -15,7 +15,7 @@
 </head>
 <body>
 <header>
-  <h1><span class="dot"></span>Las Largas</h1>
+  <button class="finca-btn" id="fincaBtn" aria-label="Cambiar de finca"><span class="dot"></span><span id="fincaNom">CampControl</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m7 10 5 5 5-5"/></svg></button>
   <button class="due-pill" id="duePill" hidden aria-label="Incidencias para revisar">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span id="dueN"></span>
   </button>
@@ -51,6 +51,22 @@
     <div class="vhead"><h2>Parcelas</h2><button class="btn accent sm" id="btnNewParc">+ Nueva parcela</button></div>
     <div class="summary" id="parcSummary"></div>
     <div class="cards" id="parcCards"></div>
+  </section>
+
+  <section class="view" id="histView" hidden>
+    <div class="vhead"><h2>Historial</h2><button class="btn sm" id="hvVolver">Volver</button></div>
+    <p class="small" style="margin:-4px 0 10px">Quién ha añadido, cambiado o borrado algo en la finca. Solo lo ven los dueños.</p>
+    <div class="filters">
+      <select id="hvPersona" class="sel" aria-label="Persona"></select>
+      <div class="seg" id="hvAccion">
+        <button data-v="" aria-pressed="true">Todo</button>
+        <button data-v="crear" aria-pressed="false">Añadido</button>
+        <button data-v="editar" aria-pressed="false">Cambios</button>
+        <button data-v="borrar" aria-pressed="false">Borrado</button>
+      </div>
+    </div>
+    <div id="hvLista" class="hlist"></div>
+    <button class="btn" id="hvMas" hidden style="width:100%;margin-top:10px">Ver más</button>
   </section>
 
   <section class="view" id="tratView" hidden>
@@ -255,34 +271,93 @@
 <!-- Sincronización -->
 <div class="sheet" id="syncSheet" hidden>
   <form class="panel" id="syncForm" novalidate>
-    <h2 id="syTitle">Compartir con otro móvil</h2>
-    <p class="small" style="margin:-6px 0 0">Incidencias, notas, fotos, parcelas y tratamientos se comparten entre los móviles que entren con su cuenta. Funciona sin cobertura: se guarda en el móvil y se sincroniza cuando vuelve la conexión.</p>
+    <h2>Sincronización</h2>
+    <p class="small" style="margin:-6px 0 0">Todo lo que apuntáis en la finca se comparte entre los móviles del equipo. Funciona sin cobertura: se guarda en el móvil y se envía cuando vuelve la conexión.</p>
     <div class="calc" id="syEstado"></div>
     <div class="calc" id="syPend" hidden></div>
     <div class="row" id="syArreglar" hidden style="display:flex;gap:8px;flex-wrap:wrap">
       <button type="button" class="btn sm" id="syReenviar" style="flex:1">Reenviar todo</button>
       <button type="button" class="btn sm" id="syRecibir" style="flex:1">Recibir todo de nuevo</button>
     </div>
-    <div class="field"><label for="syNombre">Tu nombre</label><input id="syNombre" maxlength="30" placeholder="Ej.: Enrique" autocomplete="name"><span class="hint">Aparece en las notas de seguimiento que escribas.</span></div>
-    <div id="syLogin" style="display:grid;gap:14px">
-      <div class="field"><label for="syEmail">Correo</label><input id="syEmail" type="email" autocomplete="username" placeholder="tu@correo.com"></div>
-      <div class="field"><label for="syPass">Contraseña</label><input id="syPass" type="password" autocomplete="current-password"></div>
-      <details id="syServer" class="calc"><summary>Datos del servidor</summary>
-        <div style="display:grid;gap:10px;margin-top:10px">
-          <div class="field"><label for="syUrl">Dirección (Project URL)</label><input id="syUrl" inputmode="url" placeholder="https://xxxx.supabase.co"></div>
-          <div class="field"><label for="syKey">Clave pública (anon key)</label><input id="syKey" placeholder="eyJ…"></div>
-        </div>
-      </details>
-    </div>
+    <div class="field"><label for="syNombre">Tu nombre</label><input id="syNombre" maxlength="30" placeholder="Ej.: Enrique" autocomplete="name"><span class="hint">Es el nombre que verá el resto del equipo en el historial y en las notas.</span></div>
+    <button type="button" class="btn primary" id="syEntrar">Entrar o crear cuenta</button>
     <div class="actions">
       <button type="button" class="btn" id="syCerrar">Cerrar</button>
       <button type="button" class="btn danger" id="sySalir" hidden>Cerrar sesión</button>
-      <button type="submit" class="btn primary" id="syOk">Entrar</button>
+      <button type="submit" class="btn primary" id="syOk">Sincronizar ahora</button>
     </div>
   </form>
 </div>
 
-<!-- Recorrido con el tractor -->
+<!-- Bienvenida: cuenta y fincas -->
+<div class="bienv" id="bienv" hidden>
+  <div class="bienv-in">
+    <div class="bienv-logo"><span class="dot"></span>CampControl</div>
+    <p class="bienv-sub" id="bvSub">Incidencias, tratamientos y recorridos de tu finca, compartidos con tu equipo.</p>
+
+    <form id="bvEntrar" class="bienv-card" novalidate>
+      <div class="seg" id="bvModo"><button type="button" data-m="entrar" aria-pressed="true">Entrar</button><button type="button" data-m="crear" aria-pressed="false">Crear cuenta</button></div>
+      <div class="field" id="bvNomWrap" hidden><label for="bvNom">Tu nombre</label><input id="bvNom" maxlength="30" autocomplete="name" placeholder="Ej.: Enrique"></div>
+      <div class="field"><label for="bvEmail">Correo</label><input id="bvEmail" type="email" autocomplete="username" placeholder="tu@correo.com"></div>
+      <div class="field"><label for="bvPass">Contraseña</label><input id="bvPass" type="password" autocomplete="current-password" placeholder="Mínimo 6 caracteres"></div>
+      <button type="submit" class="btn primary" id="bvOk">Entrar</button>
+      <p class="hint" id="bvMsg" style="text-align:center"></p>
+    </form>
+
+    <div id="bvFincas" class="bienv-card" hidden>
+      <h2 id="bvHola">Tus fincas</h2>
+      <div id="bvLista" style="display:grid;gap:8px"></div>
+      <div class="bienv-sep">o</div>
+      <div class="field"><label for="bvCodigo">Unirme a una finca con un código</label>
+        <div style="display:flex;gap:8px"><input id="bvCodigo" maxlength="8" placeholder="Ej.: K7M2QX" autocapitalize="characters" style="text-transform:uppercase;letter-spacing:.15em;font-weight:700"><button type="button" class="btn primary" id="bvUnirse">Unirme</button></div>
+        <span class="hint">Te lo da el dueño de la finca.</span></div>
+      <div class="field"><label for="bvNueva">Crear mi propia finca</label>
+        <div style="display:flex;gap:8px"><input id="bvNueva" maxlength="60" placeholder="Nombre de la finca"><button type="button" class="btn" id="bvCrear">Crear</button></div>
+        <span class="hint">Serás el dueño y podrás invitar a tus trabajadores.</span></div>
+      <button type="button" class="btn link" id="bvSalir">Cerrar sesión</button>
+    </div>
+
+    <button type="button" class="btn link bienv-local" id="bvLocal">Usar sin cuenta (solo en este móvil)</button>
+  </div>
+</div>
+
+<!-- Equipo -->
+<div class="sheet" id="equipoSheet" hidden>
+  <div class="panel">
+    <div class="vhead" style="margin:0"><h2 id="eqTitulo">Equipo</h2><button type="button" class="btn sm" id="eqRenombrar" hidden>Cambiar nombre</button></div>
+    <div class="codigo-box" id="eqCodigoBox" hidden>
+      <span class="lbl">Código para invitar</span>
+      <div class="codigo" id="eqCodigo">······</div>
+      <p class="small" style="margin:0">Pásaselo a tus trabajadores. En CampControl, al entrar, eligen «Unirme a una finca con un código».</p>
+      <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
+        <button type="button" class="btn sm" id="eqCopiar" style="flex:1">Copiar</button>
+        <button type="button" class="btn sm" id="eqCompartir" style="flex:1">Enviar por WhatsApp…</button>
+        <button type="button" class="btn sm" id="eqRenovar" style="flex:1">Cambiar código</button>
+      </div>
+    </div>
+    <div id="eqLista" style="display:grid;gap:8px"></div>
+    <p class="hint" id="eqInfo"></p>
+    <div class="actions">
+      <button type="button" class="btn danger" id="eqSalir" hidden>Salir de esta finca</button>
+      <button type="button" class="btn" id="eqCerrar">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Detalle del historial -->
+<div class="sheet" id="histSheet" hidden>
+  <div class="panel">
+    <h2 id="hsTitulo">Cambio</h2>
+    <p class="small" id="hsQuien" style="margin:-8px 0 0"></p>
+    <div id="hsCambios"></div>
+    <div class="actions">
+      <button type="button" class="btn" id="hsCerrar">Cerrar</button>
+      <button type="button" class="btn primary" id="hsRestaurar" hidden>Recuperar</button>
+    </div>
+  </div>
+</div>
+
+<!-- Recorrido con el tractor --><!-- Recorrido con el tractor -->
 <div class="sheet" id="recSheet" hidden>
   <div class="panel">
     <h2>Recorrido con el tractor</h2>
@@ -332,8 +407,11 @@
   </div>
 </div>
 <div class="menu" id="menu" hidden>
+  <button id="mEquipo">Equipo y código de invitación</button>
+  <button id="mHist">Historial de cambios</button>
+  <button id="mFincas">Mis fincas</button>
+  <button id="mCuenta">Sincronización</button>
   <button id="mInforme">Informe en Excel o PDF</button>
-  <button id="mCuenta">Compartir con otro móvil</button>
   <button id="mExport">Exportar copia de seguridad</button>
   <button id="mImport">Importar copia de seguridad</button>
   <button id="mFit">Ver todo en el mapa</button>
@@ -350,6 +428,7 @@
 
 <script src="leaflet/leaflet.js"></script>
 <script src="js/util.js"></script>
+<script src="js/finca.js"></script>
 <script src="js/db.js"></script>
 <script src="js/map.js"></script>
 <script src="js/notif.js"></script>
@@ -361,6 +440,7 @@
 <script src="js/backup.js"></script>
 <script src="js/config.js"></script>
 <script src="js/sync.js"></script>
+<script src="js/cuenta.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

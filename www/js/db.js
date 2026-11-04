@@ -4,7 +4,7 @@
 const DB = (() => {
   let p;
   const open = () => p || (p = new Promise((res, rej) => {
-    const r = indexedDB.open('mi-naranjal', 2);
+    const r = indexedDB.open(Finca.dbNombre(), 2);
     r.onupgradeneeded = () => {
       const db = r.result;
       for (const s of ['inc', 'parcelas', 'trat']) if (!db.objectStoreNames.contains(s)) db.createObjectStore(s, { keyPath: 'id' });
@@ -59,8 +59,11 @@ async function cargar() {
 }
 
 const alCambiar = []; // otros módulos (sincronización) se enganchan aquí
+const nombreMio = () => { try { return localStorage.getItem('autor') || ''; } catch (e) { return ''; } };
 async function guardar(k, rec) {
   rec.actualizado = Date.now(); rec._sync = 1;
+  const yo = nombreMio();
+  if (yo) { rec.editadoPor = yo; if (!rec.creadoPor) rec.creadoPor = yo; }
   if (!rec.creado) rec.creado = rec.actualizado;
   await DB.put(k, rec);
   const i = S[k].findIndex(x => x.id === rec.id); i >= 0 ? S[k][i] = rec : S[k].push(rec);

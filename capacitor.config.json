@@ -1,6 +1,6 @@
 {
   "appId": "es.cantillana.minaranjal",
-  "appName": "Las Largas",
+  "appName": "CampControl",
   "webDir": "www",
   "android": {
     "allowMixedContent": false

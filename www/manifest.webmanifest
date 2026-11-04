@@ -1,6 +1,6 @@
 {
-  "name": "Las Largas",
-  "short_name": "Las Largas",
+  "name": "CampControl",
+  "short_name": "CampControl",
   "description": "Incidencias de los naranjos con foto y ubicación en el mapa",
   "lang": "es",
   "start_url": "./",
