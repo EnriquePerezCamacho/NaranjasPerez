@@ -6,7 +6,8 @@ function vista(v) {
   for (const [k, sel] of Object.entries(VISTAS)) if (sel) $(sel).hidden = k !== v;
   $$('nav button').forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v));
   $('#camaras').hidden = !(v === 'mapa' || v === 'lista');
-  $('#btnFit').hidden = $('#btnLocate').hidden = v !== 'mapa';
+  $('#btnFit').hidden = $('#btnLocate').hidden = $('#btnTractor').hidden = v !== 'mapa';
+  Rec.mostrarUI();
   if (v === 'mapa') setTimeout(() => map.invalidateSize(), 50);
   if (v === 'lista') renderInc();
   if (v === 'parcelas') renderParc();
@@ -29,7 +30,7 @@ $$('.sheet').forEach(s => s.addEventListener('click', e => {
 function atras() {
   if (!$('#viewer').hidden) return cerrarVisor(), true;
   if (!$('#confirm').hidden) return $('#cfNo').click(), true;
-  for (const id of ['fileOk', 'syncSheet', 'infSheet', 'segSheet', 'tratSheet', 'parcSheet']) if (!$('#' + id).hidden) return $('#' + id).hidden = true, true;
+  for (const id of ['fileOk', 'recSheet', 'syncSheet', 'infSheet', 'segSheet', 'tratSheet', 'parcSheet']) if (!$('#' + id).hidden) return $('#' + id).hidden = true, true;
   if (!$('#sheet').hidden) return cerrarForm(), true;
   if (enDibujo()) return $('#drawCancel').click(), true;
   if (!$('#pickBanner').hidden) return $('#pickCancel').click(), true;
@@ -53,6 +54,7 @@ document.addEventListener('keydown', e => {
   encuadrar(false);
   Notif.init(); Notif.reprogramar();
   Sync.init();
+  Rec.recuperar();
   (async () => { let v = ''; try { v = (await plugin('App')?.getInfo())?.version || ''; } catch (e) {} $('#mVer').textContent = 'Las Largas' + (v ? ' · versión ' + v : ''); })();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !nativo()) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();

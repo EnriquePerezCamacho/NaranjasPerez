@@ -34,7 +34,7 @@ function renderTrat() {
   lista.forEach(t => {
     const desde = recogerDesde(t);
     const el = document.createElement('div'); el.className = 'box';
-    el.innerHTML = `<div class="top"><div class="grow"><div class="small">${fmtDate(t.fecha)}</div><h3>${esc(t.producto)}</h3></div>
+    el.innerHTML = `<div class="top"><div class="grow"><div class="small">${fmtDate(t.fecha)}</div><h3>${esc(t.producto || (t.recorrido ? 'Recorrido sin completar' : 'Sin producto'))}</h3></div>
         <button class="btn sm" data-a="edit">Editar</button></div>
       ${dosisTxt(t) || t.materia ? `<div class="small">${[t.materia, dosisTxt(t)].filter(Boolean).map(esc).join(' · ')}</div>` : ''}
       <div class="pchips">${t.parcelas?.length
@@ -42,11 +42,14 @@ function renderTrat() {
         : '<span class="tag" style="--c:#999"><i></i>Toda la finca</span>'}</div>
       ${t.motivo ? `<div class="small">Motivo: ${esc(t.motivo)}</div>` : ''}
       ${desde ? (desde > today() ? `<span class="badge danger">No recoger hasta el ${fmtCorta(desde)}</span>` : `<span class="badge muted">Plazo de seguridad cumplido el ${fmtCorta(desde)}</span>`) : ''}
-      <div class="row"><button class="btn sm" data-a="rep">Repetir hoy</button></div>`;
+      ${t.recorrido ? `<div class="small">${t.recorrido.estado === 'activo' ? '<span class="badge warn">Recorrido en curso</span> ' : ''}Recorrido: ${esc(Rec.resumen(t.recorrido))}</div>` : ''}
+      ${t.borrador && t.recorrido?.estado !== 'activo' ? '<span class="badge warn">Falta apuntar producto y dosis</span>' : ''}
+      <div class="row">${t.recorrido ? '<button class="btn sm" data-a="ver">Ver recorrido</button>' : ''}<button class="btn sm" data-a="rep">Repetir hoy</button></div>`;
     el.addEventListener('click', e => {
       const a = e.target.closest('[data-a]')?.dataset.a; if (!a) return;
       if (a === 'edit') abrirTratForm(t);
-      if (a === 'rep') { const { id, creado, actualizado, _sync, ...resto } = t; abrirTratForm({ ...resto, fecha: today(), aplicador: aplicadorDefecto() || t.aplicador }, true); }
+      if (a === 'ver') Rec.ver(t);
+      if (a === 'rep') { const { id, creado, actualizado, _sync, recorrido, borrador, ...resto } = t; abrirTratForm({ ...resto, fecha: today(), aplicador: aplicadorDefecto() || t.aplicador }, true); }
     });
     box.appendChild(el);
   });
@@ -117,6 +120,7 @@ $('#tratForm').addEventListener('submit', async e => {
     caldo: $('#tCaldo').value.trim(), plazo: $('#tPlazo').value.trim(), motivo: $('#tMotivo').value.trim(),
     aplicador: $('#tAplicador').value.trim(), notas: $('#tNotas').value.trim()
   };
+  if (te.recorrido) rec.recorrido = (porId('trat', te.id) || te).recorrido;
   try { if (rec.aplicador) localStorage.setItem('aplicador', rec.aplicador); } catch (err) {}
   const nuevo = !porId('trat', rec.id);
   await guardar('trat', rec); $('#tratSheet').hidden = true; te = null; renderTrat(); renderSiVisible();

@@ -22,6 +22,7 @@
   <span id="count"></span>
   <span class="sync-dot" id="syncDot" hidden title="Sincronización"></span>
   <button class="sync-off" id="syncOff" hidden>Sin conectar</button>
+  <button class="rec-chip" id="recChip" hidden><i></i>Tractor</button>
   <button class="icon-btn" id="btnMenu" aria-label="Más opciones">
     <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
   </button>
@@ -59,6 +60,28 @@
     <div class="cards" id="tratCards"></div>
   </section>
 
+  <button class="map-btn" id="btnTractor" aria-label="Recorrido con el tractor" title="Recorrido con el tractor">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><circle cx="7" cy="17" r="3.2"/><circle cx="18" cy="18" r="2"/><path d="M4 13V7h6l2 6h6.5a1.5 1.5 0 0 1 1.5 1.5V17"/><path d="M10.2 17H16"/><path d="M14 13V9h3"/></svg>
+  </button>
+  <div class="ver-banner" id="verBanner" hidden><span id="verTxt"></span><button class="btn sm" id="verCerrar">Ocultar</button></div>
+  <div class="rec-panel" id="recPanel" hidden>
+    <div class="rec-top">
+      <span class="rec-estado" id="recEstado"></span>
+      <span class="rec-stats" id="recStats"></span>
+      <button class="rec-ico" id="recCentrar" aria-label="Seguirme en el mapa" aria-pressed="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></button>
+      <button class="rec-ico" id="recNoche" aria-label="Modo noche" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5z"/></svg></button>
+    </div>
+    <div class="rec-guia" id="recGuia" hidden>
+      <svg class="rec-flecha" id="recFlecha" viewBox="0 0 24 24"><path d="M12 2 19 20 12 15.5 5 20z"/></svg>
+      <div><b id="recDist"></b><span id="recGuiaTxt"></span></div>
+    </div>
+    <div class="rec-btns">
+      <button class="rec-big or" id="recAcabado">Se acabó el producto</button>
+      <button class="rec-big gr" id="recSeguir" hidden>Seguir tratando</button>
+      <button class="rec-sm" id="recFin">Terminar</button>
+    </div>
+    <div class="rec-gps" id="recGps"></div>
+  </div>
   <button class="map-btn" id="btnFit" aria-label="Ver todo" title="Ver todo">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
   </button>
@@ -259,6 +282,21 @@
   </form>
 </div>
 
+<!-- Recorrido con el tractor -->
+<div class="sheet" id="recSheet" hidden>
+  <div class="panel">
+    <h2>Recorrido con el tractor</h2>
+    <p class="small" style="margin:-6px 0 0">La app dibuja una línea por donde vas tratando. Si se acaba el producto, pulsa «Se acabó el producto»: queda marcado el punto y, al volver de cargar, una flecha te lleva hasta él. La pantalla se queda encendida mientras dura el recorrido.</p>
+    <div id="rContWrap" class="field" hidden><span class="lbl">Recorrido sin terminar</span><div id="rCont" style="display:grid;gap:8px"></div></div>
+    <div class="field"><label for="rAncho">Ancho de calle (metros)</label><input id="rAncho" inputmode="decimal" maxlength="5" placeholder="Ej.: 6"><span class="hint">Sirve para calcular las hectáreas tratadas. Déjalo vacío si no lo necesitas.</span></div>
+    <div class="checks"><label><input type="checkbox" id="rNoche"> Modo noche (mapa oscuro, botones grandes)</label></div>
+    <div class="actions">
+      <button type="button" class="btn" id="rCancelar">Cancelar</button>
+      <button type="button" class="btn primary" id="rEmpezar">Empezar recorrido</button>
+    </div>
+  </div>
+</div>
+
 <!-- Confirmación -->
 <div class="sheet center" id="confirm" hidden>
   <div class="panel">
@@ -318,6 +356,7 @@
 <script src="js/incidencias.js"></script>
 <script src="js/parcelas.js"></script>
 <script src="js/tratamientos.js"></script>
+<script src="js/recorrido.js"></script>
 <script src="js/informes.js"></script>
 <script src="js/backup.js"></script>
 <script src="js/config.js"></script>
