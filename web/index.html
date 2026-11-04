@@ -3,19 +3,25 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>CampControl</title>
-<meta name="description" content="CampControl registra las incidencias de tus naranjos con foto, vídeo y ubicación GPS, y las comparte con tu equipo. App para Android.">
+<title>CampControl · Incidencias de tu finca en el mapa</title>
+<meta name="description" content="CampControl registra las incidencias de tus naranjos con foto, vídeo y ubicación GPS, y las comparte con tu equipo. App para Android y versión web para el ordenador.">
+<meta property="og:title" content="CampControl">
+<meta property="og:description" content="Las incidencias de tu finca, en el mapa. App para Android y versión para el ordenador.">
+<meta property="og:image" content="img/app-ordenador.webp">
+<meta name="theme-color" content="#1c3d2b">
+<link rel="icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-/* Plan: sitio de producto sobrio. Blanco, texto casi negro, verde de marca para superficies, naranja solo en acciones e incidencias. La app se enseña en un móvil. */
+/* Plan: web de producto. Blanco y gris verdoso, texto casi negro, verde de marca, naranja solo para acciones.
+   Las capturas reales de la app (móvil y ordenador) llevan el peso visual. */
 :root{
   --bg:#ffffff;
-  --bg-soft:#f5f6f3;
+  --bg-soft:#f4f6f2;
   --ink:#121a15;
-  --muted:#5b665f;
-  --line:#e3e6e1;
+  --muted:#58635c;
+  --line:#e2e6e0;
   --green:#1c3d2b;
   --green-2:#2c5a40;
   --orange:#e46a17;
@@ -24,116 +30,120 @@
   color-scheme:light;
 }
 *{box-sizing:border-box}
+html{scroll-behavior:smooth}
 html,body{margin:0}
 body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.6;-webkit-font-smoothing:antialiased}
-img,canvas,svg{max-width:100%;display:block}
+img{max-width:100%;display:block}
 a{color:inherit}
-h1,h2,h3{margin:0;line-height:1.15;letter-spacing:-.02em;font-weight:600;text-wrap:balance}
+h1,h2,h3{margin:0;line-height:1.12;letter-spacing:-.022em;font-weight:600;text-wrap:balance}
 p{margin:0}
-.wrap{max-width:1120px;margin:0 auto;padding:0 clamp(16px,4vw,32px)}
+.wrap{max-width:1200px;margin:0 auto;padding:0 clamp(16px,4vw,32px)}
 :focus-visible{outline:2px solid var(--orange);outline-offset:3px;border-radius:4px}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{transition:none!important;animation:none!important}}
 
-.btn{display:inline-flex;align-items:center;gap:8px;font:600 15px/1 var(--font);text-decoration:none;border-radius:8px;padding:13px 18px;border:1px solid transparent;transition:background .15s ease,border-color .15s ease}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;font:600 15px/1 var(--font);text-decoration:none;border-radius:8px;padding:13px 18px;border:1px solid transparent;transition:background .15s ease,border-color .15s ease,transform .15s ease}
+.btn:active{transform:translateY(1px)}
 .btn-primary{background:var(--orange);color:#fff}
 .btn-primary:hover{background:var(--orange-d)}
-.btn-secondary{border-color:var(--line);background:#fff}
-.btn-secondary:hover{border-color:#c9cec7}
+.btn-secondary{border-color:var(--line);background:#fff;color:var(--ink)}
+.btn-secondary:hover{border-color:#c4cac2}
+.btn-dark{background:var(--green);color:#fff}
+.btn-dark:hover{background:var(--green-2)}
 .btn svg{width:18px;height:18px}
 
 /* Cabecera */
-header{border-bottom:1px solid var(--line);background:rgba(255,255,255,.92);position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.4) blur(8px)}
-.nav{display:flex;align-items:center;justify-content:space-between;height:64px;gap:16px}
-.brand{display:flex;align-items:center;gap:9px;font-weight:700;font-size:18px;text-decoration:none;letter-spacing:-.01em}
-.brand svg{width:26px;height:26px}
+header{border-bottom:1px solid var(--line);background:rgba(255,255,255,.9);position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.4) blur(10px)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:66px;gap:16px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;text-decoration:none;letter-spacing:-.01em}
+.brand img{width:28px;height:28px;border-radius:7px}
 .nav-links{display:flex;align-items:center;gap:28px;font-size:15px;color:var(--muted)}
 .nav-links a{text-decoration:none}
-.nav-links a:hover{color:var(--ink)}
+.nav-links a:not(.btn):hover{color:var(--ink)}
+.nav-cta{display:flex;gap:10px}
 .nav .btn{padding:10px 14px;font-size:14px}
 
 /* Hero */
-.hero{padding:clamp(48px,7vw,88px) 0 clamp(56px,7vw,96px)}
-.hero-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:56px;align-items:center}
-.badge{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--green-2);background:#eaf1ec;border-radius:6px;padding:5px 10px}
+.hero{padding:clamp(48px,7vw,84px) 0 0;background:linear-gradient(180deg,#fff 0%,var(--bg-soft) 100%);overflow:hidden;border-bottom:1px solid var(--line)}
+.hero-text{max-width:760px;margin:0 auto;text-align:center}
+.badge{display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:500;color:var(--green-2);background:#e7efe9;border-radius:999px;padding:5px 12px}
 .badge i{width:6px;height:6px;border-radius:50%;background:var(--green-2)}
-.hero h1{font-size:clamp(2.3rem,5vw,3.6rem);margin:20px 0 18px;max-width:16ch}
-.hero .lead{font-size:clamp(1.05rem,1.4vw,1.2rem);color:var(--muted);max-width:46ch}
-.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:32px}
-.small{font-size:13px;color:var(--muted);margin-top:14px}
+.hero h1{font-size:clamp(2.4rem,5.4vw,4rem);margin:20px auto 18px;max-width:15ch}
+.hero .lead{font-size:clamp(1.05rem,1.5vw,1.22rem);color:var(--muted);max-width:52ch;margin:0 auto}
+.cta{display:flex;flex-wrap:wrap;gap:12px;margin-top:30px;justify-content:center}
+.hero .small{font-size:13.5px;color:var(--muted);margin-top:14px}
 
-/* Móvil */
-.phone{width:min(320px,100%);margin:0 auto;border-radius:44px;background:#0e1310;padding:11px;box-shadow:0 40px 80px -30px rgba(18,26,21,.45),0 0 0 1px rgba(0,0,0,.05)}
-.screen{border-radius:34px;overflow:hidden;background:#fff;position:relative;aspect-ratio:9/19.2;display:flex;flex-direction:column}
-.status{display:flex;justify-content:space-between;align-items:center;font-size:11px;font-weight:600;padding:10px 22px 6px;position:absolute;inset:0 0 auto;z-index:3;color:#fff}
-.map{position:relative;flex:1;min-height:0;background:#7c6e4c}
-.map canvas{width:100%;height:100%;object-fit:cover}
-.map-top{position:absolute;top:34px;left:12px;right:12px;display:flex;gap:8px;z-index:2}
-.search{flex:1;background:#fff;border-radius:10px;font-size:12px;color:var(--muted);padding:9px 11px;display:flex;gap:7px;align-items:center;box-shadow:0 2px 8px rgba(0,0,0,.18)}
-.search svg{width:13px;height:13px}
-.layers{width:36px;background:#fff;border-radius:10px;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.18)}
-.layers svg{width:16px;height:16px}
-.sheet{background:#fff;border-radius:18px 18px 0 0;margin-top:-18px;position:relative;z-index:2;padding:8px 16px 12px}
-.grab{width:36px;height:4px;border-radius:2px;background:#d7dbd5;margin:0 auto 10px}
-.sheet-row{display:flex;gap:11px}
-.thumb{width:54px;height:54px;border-radius:10px;flex:0 0 auto;background:radial-gradient(circle at 35% 35%,#7fae67,#2b5a32 70%);position:relative;overflow:hidden}
-.thumb::after{content:"";position:absolute;width:9px;height:9px;border-radius:50%;background:#d9a63a;top:16px;left:26px;box-shadow:-10px 12px 0 -1px #e6c34d,8px 18px 0 -2px #c8a43d}
-.sheet h4{margin:0;font-size:13.5px;font-weight:600;line-height:1.25}
-.sheet .meta{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.35}
-.tag{display:inline-block;font-size:10px;font-weight:600;color:var(--orange-d);background:#fdf0e6;border-radius:4px;padding:2px 6px;margin-top:6px}
-.tabs{display:flex;justify-content:space-around;border-top:1px solid var(--line);padding:9px 0 14px;font-size:10px;color:var(--muted)}
-.tabs span{display:flex;flex-direction:column;align-items:center;gap:3px}
-.tabs svg{width:18px;height:18px}
-.tabs .on{color:var(--green)}
+.shots{position:relative;margin:56px auto 0;max-width:1120px;padding:0 clamp(0px,6vw,90px) 0 0}
+.browser{border-radius:12px 12px 0 0;background:#fff;border:1px solid var(--line);border-bottom:0;box-shadow:0 30px 80px -30px rgba(18,26,21,.35);overflow:hidden}
+.browser-bar{display:flex;align-items:center;gap:7px;padding:11px 14px;border-bottom:1px solid var(--line);background:#f7f8f6}
+.browser-bar i{width:11px;height:11px;border-radius:50%;background:#dfe3dd}
+.browser-bar span{margin-left:12px;flex:1;max-width:340px;font-size:12.5px;color:var(--muted);background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px 10px}
+.browser img{width:100%;height:auto}
+.phone{width:min(250px,30%);border-radius:36px;background:#0e1310;padding:8px;box-shadow:0 30px 60px -20px rgba(18,26,21,.55)}
+.phone img{border-radius:29px;width:100%;height:auto}
+.shots .phone{position:absolute;right:0;bottom:-40px}
+
+/* Franja de datos */
+.facts{display:grid;grid-template-columns:repeat(4,1fr);gap:0;border-bottom:1px solid var(--line)}
+.fact{padding:26px 24px;border-right:1px solid var(--line)}
+.fact:last-child{border-right:0}
+.fact b{display:block;font-size:1.02rem;font-weight:600}
+.fact span{color:var(--muted);font-size:.94rem}
 
 /* Secciones */
-section{padding:clamp(64px,8vw,104px) 0}
+section{padding:clamp(72px,9vw,120px) 0}
 .soft{background:var(--bg-soft);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
-.head{max-width:620px;margin-bottom:48px}
-.head h2{font-size:clamp(1.8rem,3.2vw,2.5rem)}
-.head p{color:var(--muted);margin-top:14px;font-size:1.05rem}
+.eyebrow{font-size:14px;font-weight:600;color:var(--orange-d);margin-bottom:12px}
+.head{max-width:640px;margin-bottom:52px}
+.head.center{text-align:center;margin-left:auto;margin-right:auto}
+.head h2{font-size:clamp(1.9rem,3.4vw,2.7rem)}
+.head p{color:var(--muted);margin-top:14px;font-size:1.06rem}
 
-/* Pasos */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
 .step{border-top:1px solid var(--ink);padding-top:20px}
 .step small{font-size:13px;font-weight:600;color:var(--muted)}
-.step h3{font-size:1.2rem;margin:8px 0 8px}
+.step h3{font-size:1.2rem;margin:8px 0}
 .step p{color:var(--muted)}
 
-/* Filas de funciones */
-.rows{display:grid;gap:clamp(56px,8vw,96px)}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:56px;align-items:center}
-.row.flip .row-text{order:2}
-.row-text h3{font-size:clamp(1.4rem,2.4vw,1.85rem)}
-.row-text p{color:var(--muted);margin-top:12px;max-width:44ch}
-.row-text ul{margin:20px 0 0;padding:0;list-style:none;display:grid;gap:10px}
-.row-text li{display:flex;gap:10px;align-items:flex-start}
-.row-text li svg{flex:0 0 18px;width:18px;height:18px;margin-top:3px;color:var(--green-2)}
-.panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(18,26,21,.04),0 12px 32px -16px rgba(18,26,21,.18);overflow:hidden}
+.split{display:grid;grid-template-columns:1fr 1fr;gap:clamp(40px,6vw,88px);align-items:center}
+.split.flip > :first-child{order:2}
+.split h2{font-size:clamp(1.7rem,3vw,2.35rem)}
+.split .txt > p{color:var(--muted);margin-top:14px;max-width:46ch;font-size:1.04rem}
+.checks{margin:24px 0 0;padding:0;list-style:none;display:grid;gap:14px}
+.checks li{display:grid;grid-template-columns:22px 1fr;gap:12px}
+.checks svg{width:20px;height:20px;margin-top:3px;color:var(--green-2)}
+.checks b{display:block;font-weight:600}
+.checks span{color:var(--muted);font-size:.97rem}
+.split .phone{margin:0 auto;width:min(300px,80%)}
+
+.wide{margin-top:56px}
+.wide .browser{border-radius:12px;border-bottom:1px solid var(--line)}
+
+.panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(18,26,21,.04),0 18px 40px -20px rgba(18,26,21,.22);overflow:hidden}
 .panel-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);font-size:14px;font-weight:600}
 .panel-head span{font-weight:400;color:var(--muted);font-size:13px}
-.list-item{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--line);font-size:14.5px}
-.list-item:last-child{border-bottom:0}
-.dot{width:9px;height:9px;border-radius:50%;flex:0 0 auto}
-.list-item .t{flex:1;min-width:0}
-.list-item .t b{font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.list-item .t span{font-size:12.5px;color:var(--muted)}
-.list-item time{font-size:12.5px;color:var(--muted);white-space:nowrap}
-.filter{display:flex;gap:8px;padding:12px 18px;border-bottom:1px solid var(--line);background:var(--bg-soft)}
-.filter span{font-size:12.5px;border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 9px;color:var(--muted)}
-.filter span.on{border-color:var(--green-2);color:var(--green-2);font-weight:600}
-.who{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;font-size:11.5px;font-weight:600;color:#fff;flex:0 0 auto}
+.li{display:flex;align-items:center;gap:14px;padding:13px 18px;border-bottom:1px solid var(--line);font-size:14.5px}
+.li:last-child{border-bottom:0}
+.li .t{flex:1;min-width:0}
+.li .t b{font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.li .t span{font-size:12.5px;color:var(--muted)}
+.li time{font-size:12.5px;color:var(--muted);white-space:nowrap}
+.who{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-size:11.5px;font-weight:600;color:#fff;flex:0 0 auto}
+.act{font-size:11px;font-weight:600;border-radius:4px;padding:2px 6px;margin-right:6px}
+.act.add{background:#e6f1ea;color:#1f6b3f}.act.del{background:#fbe9e7;color:#b3261e}.act.edit{background:#eef1f6;color:#3c4a63}
 
-/* Roles */
+.more{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.more div{padding:28px 26px;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff}
+.more svg{width:24px;height:24px;color:var(--green-2)}
+.more h3{font-size:1.08rem;margin:14px 0 6px}
+.more p{color:var(--muted);font-size:.96rem}
+
 .roles{display:grid;grid-template-columns:1fr 1fr;gap:20px}
-.role{border:1px solid var(--line);border-radius:14px;padding:28px;background:#fff}
-.role h3{font-size:1.25rem}
-.role p{color:var(--muted);margin-top:8px}
-.role ul{margin:18px 0 0;padding:0;list-style:none;display:grid;gap:9px}
-.role li{display:flex;gap:10px;font-size:15.5px}
-.role li svg{flex:0 0 18px;width:18px;height:18px;margin-top:3px;color:var(--green-2)}
+.role{border:1px solid var(--line);border-radius:14px;padding:30px;background:#fff}
+.role h3{font-size:1.3rem}
+.role > p{color:var(--muted);margin-top:8px}
 
-/* Instalar */
 .install{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
-.install ol{margin:0;padding:0;list-style:none;counter-reset:s;display:grid;gap:0;border:1px solid var(--line);border-radius:14px;background:#fff}
+.install ol{margin:0;padding:0;list-style:none;counter-reset:s;border:1px solid var(--line);border-radius:14px;background:#fff}
 .install li{counter-increment:s;display:grid;grid-template-columns:36px 1fr;gap:14px;padding:20px 22px;border-bottom:1px solid var(--line)}
 .install li:last-child{border-bottom:0}
 .install li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;font-size:13px;font-weight:600;display:grid;place-items:center}
@@ -141,246 +151,268 @@ section{padding:clamp(64px,8vw,104px) 0}
 .install li span{color:var(--muted);font-size:15.5px}
 .note{margin-top:24px;font-size:14.5px;color:var(--muted);border-left:2px solid var(--line);padding-left:14px}
 
-/* FAQ */
-.faq{max-width:760px}
-.faq details{border-bottom:1px solid var(--line);padding:18px 0}
+.faq{max-width:780px;margin:0 auto}
+.faq details{border-bottom:1px solid var(--line);padding:20px 0}
 .faq details:first-of-type{border-top:1px solid var(--line)}
-.faq summary{cursor:pointer;list-style:none;font-weight:600;font-size:1.05rem;display:flex;justify-content:space-between;gap:16px}
+.faq summary{cursor:pointer;list-style:none;font-weight:600;font-size:1.06rem;display:flex;justify-content:space-between;gap:16px}
 .faq summary::-webkit-details-marker{display:none}
-.faq summary::after{content:"";width:10px;height:10px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-top:4px;transition:transform .2s}
-.faq details[open] summary::after{transform:rotate(-135deg);margin-top:9px}
+.faq summary::after{content:"";flex:none;width:9px;height:9px;border-right:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);margin-top:6px;transition:transform .2s}
+.faq details[open] summary::after{transform:rotate(-135deg);margin-top:11px}
 .faq details p{color:var(--muted);margin-top:10px}
 
-/* CTA final */
-.final{background:var(--green);color:#fff;border-radius:18px;padding:clamp(32px,5vw,56px);display:flex;justify-content:space-between;align-items:center;gap:32px;flex-wrap:wrap}
-.final h2{font-size:clamp(1.6rem,3vw,2.2rem);max-width:20ch}
-.final p{color:#c9d8ce;margin-top:10px;max-width:46ch}
+.final{background:var(--green);color:#fff;border-radius:20px;padding:clamp(36px,5vw,64px);display:grid;grid-template-columns:1.2fr auto;gap:32px;align-items:center}
+.final h2{font-size:clamp(1.7rem,3.2vw,2.4rem);max-width:18ch}
+.final p{color:#c9d8ce;margin-top:12px;max-width:46ch}
 .final .btn-secondary{background:transparent;color:#fff;border-color:rgba(255,255,255,.35)}
 .final .btn-secondary:hover{border-color:#fff}
 
-footer{border-top:1px solid var(--line);padding:40px 0;margin-top:clamp(64px,8vw,104px);font-size:14px;color:var(--muted)}
-.foot{display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;align-items:center}
-.foot nav{display:flex;gap:22px;flex-wrap:wrap}
+footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72px,9vw,120px);font-size:14.5px;color:var(--muted)}
+.foot{display:grid;grid-template-columns:1.4fr repeat(3,1fr);gap:32px}
+.foot h4{margin:0 0 12px;font-size:14px;color:var(--ink);font-weight:600}
+.foot ul{list-style:none;margin:0;padding:0;display:grid;gap:8px}
 .foot a{text-decoration:none}
 .foot a:hover{color:var(--ink)}
+.foot .brand{margin-bottom:10px;color:var(--ink)}
+.copy{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:13.5px}
 
-@media (max-width:900px){
-  .hero-grid,.row,.install{grid-template-columns:1fr}
-  .row.flip .row-text{order:0}
+@media (max-width:960px){
   .nav-links a:not(.btn){display:none}
-  .hero-grid{gap:48px}
+  .split,.install,.final{grid-template-columns:1fr}
+  .split.flip > :first-child{order:0}
+  .facts{grid-template-columns:1fr 1fr}
+  .fact:nth-child(2){border-right:0}
+  .fact:nth-child(-n+2){border-bottom:1px solid var(--line)}
+  .more{grid-template-columns:1fr 1fr}
+  .foot{grid-template-columns:1fr 1fr}
+  .shots{padding-right:0}
+  .shots .phone{display:none}
 }
 @media (max-width:640px){
-  .steps,.roles{grid-template-columns:1fr}
-  .cta .btn{flex:1 1 100%;justify-content:center}
+  .steps,.roles,.more,.facts{grid-template-columns:1fr}
+  .fact{border-right:0;border-bottom:1px solid var(--line)}
+  .cta .btn{flex:1 1 100%}
+  .nav-cta .btn-secondary{display:none}
+  .shots .browser{display:none}
+  .shots .phone{display:block;position:static;width:min(270px,78%);margin:0 auto -60px}
+  .hero{padding-bottom:0}
+  .facts{margin-top:80px}
+  .foot{grid-template-columns:1fr}
 }
-@media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 </head>
 <body>
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href="#inicio" aria-label="CampControl, inicio">
-      <svg viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#1c3d2b"/><circle cx="16" cy="18" r="8" fill="#e46a17"/><path d="M16 10c1.5-2.6 4.6-3.3 6.6-2.2-1.4 2.6-4.2 3.4-6.6 2.2z" fill="#7fae67"/></svg>
-      CampControl
-    </a>
+    <a class="brand" href="#inicio" aria-label="CampControl, inicio"><img src="icon-192.png" alt="">CampControl</a>
     <nav class="nav-links" aria-label="Secciones">
       <a href="#como-funciona">Cómo funciona</a>
+      <a href="#ordenador">En el ordenador</a>
       <a href="#funciones">Funciones</a>
       <a href="#instalar">Instalación</a>
       <a href="#preguntas">Preguntas</a>
-      <a class="btn btn-secondary" href="app/">Entrar</a>
-      <a class="btn btn-primary js-apk" href="#">Descargar</a>
+      <span class="nav-cta">
+        <a class="btn btn-secondary" href="app/">Entrar</a>
+        <a class="btn btn-primary js-apk" href="#">Descargar</a>
+      </span>
     </nav>
   </div>
 </header>
 
 <main id="inicio">
   <div class="hero">
-    <div class="wrap hero-grid">
-      <div>
-        <span class="badge"><i></i>Disponible para Android</span>
+    <div class="wrap">
+      <div class="hero-text">
+        <span class="badge"><i></i>Android y ordenador</span>
         <h1>Las incidencias de tu finca, en el mapa</h1>
-        <p class="lead">CampControl registra cada problema de tus naranjos con foto, vídeo y ubicación GPS, y lo comparte al momento con todo tu equipo.</p>
+        <p class="lead">Haz una foto al naranjo, describe lo que le pasa y queda marcado en su sitio exacto. Tu equipo lo ve al momento en el móvil, y tú lo revisas con calma en el ordenador.</p>
         <div class="cta">
           <a class="btn btn-primary js-apk" href="#">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-            Descargar APK
+            Descargar para Android
           </a>
           <a class="btn btn-secondary" href="app/">Entrar desde el ordenador</a>
         </div>
-        <p class="small">App para Android · En el ordenador, entra con tu correo y contraseña</p>
+        <p class="small">Una sola cuenta para el móvil y el ordenador.</p>
       </div>
 
-      <div class="phone" role="img" aria-label="Pantalla de la app CampControl: mapa de la finca con una incidencia abierta">
-        <div class="screen">
-          <div class="status"><span>9:41</span><span>●●● 4G</span></div>
-          <div class="map">
-            <canvas id="orchard" width="600" height="900"></canvas>
-            <div class="map-top">
-              <div class="search"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Buscar incidencia</div>
-              <div class="layers"><svg viewBox="0 0 24 24" fill="none" stroke="#121a15" stroke-width="2" stroke-linejoin="round"><path d="M12 3l9 5-9 5-9-5 9-5z"/><path d="M3 13l9 5 9-5"/></svg></div>
-            </div>
-          </div>
-          <div class="sheet">
-            <div class="grab"></div>
-            <div class="sheet-row">
-              <div class="thumb"></div>
-              <div>
-                <h4>Hojas amarillas en la copa</h4>
-                <div class="meta">Las Largas · Fila 7, árbol 21<br>Antonio · hace 2 h</div>
-                <span class="tag">Pendiente</span>
-              </div>
-            </div>
-          </div>
-          <div class="tabs">
-            <span class="on"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2-6-2z"/><path d="M9 4v14M15 6v14"/></svg>Mapa</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01"/></svg>Lista</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h3l2-3h6l2 3h3v11H4z"/><circle cx="12" cy="13" r="3.5"/></svg>Nueva</span>
-            <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M3 20c.5-3.5 3-5.5 6-5.5s5.5 2 6 5.5M16 4.5a3.5 3.5 0 010 7M18 14.8c1.8.8 3 2.6 3.3 5.2"/></svg>Equipo</span>
-          </div>
+      <div class="shots">
+        <div class="browser">
+          <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>CampControl · Las Largas</span></div>
+          <img src="img/app-ordenador.webp" width="1600" height="1000" alt="CampControl en el ordenador: lista de incidencias con fotos a la izquierda y el mapa de la finca a la derecha">
         </div>
+        <div class="phone"><img src="img/app-movil.webp" width="585" height="1266" alt="CampControl en el móvil: mapa de la finca con las incidencias marcadas"></div>
       </div>
     </div>
   </div>
 
-  <section id="como-funciona" class="soft">
+  <div class="wrap facts">
+    <div class="fact"><b>Foto, vídeo y GPS</b><span>Cada incidencia en su árbol exacto</span></div>
+    <div class="fact"><b>Todo el equipo</b><span>Dueños y trabajadores en la misma finca</span></div>
+    <div class="fact"><b>Móvil y ordenador</b><span>Los mismos datos, sincronizados</span></div>
+    <div class="fact"><b>Informes</b><span>En Excel o PDF cuando los necesites</span></div>
+  </div>
+
+  <section id="como-funciona">
     <div class="wrap">
       <div class="head">
-        <h2>Así se usa en el campo</h2>
+        <p class="eyebrow">Cómo funciona</p>
+        <h2>Pensada para usarla con una mano, en mitad del campo</h2>
         <p>Sin libretas ni mensajes sueltos. Lo que ves en el árbol queda apuntado en su sitio.</p>
       </div>
       <div class="steps">
-        <div class="step"><small>Paso 1</small><h3>Haz una foto o un vídeo</h3><p>Delante del naranjo, de lo que haya: una plaga, una rama partida, un gotero atascado.</p></div>
-        <div class="step"><small>Paso 2</small><h3>Añade una descripción</h3><p>Un título y una nota corta. La ubicación se guarda automáticamente.</p></div>
-        <div class="step"><small>Paso 3</small><h3>Queda en el mapa</h3><p>Todo el equipo la ve en su árbol. Cuando se resuelve, se borra.</p></div>
+        <div class="step"><small>Paso 1</small><h3>Haz una foto o un vídeo</h3><p>Con el botón naranja la foto sale con su ubicación al momento. Si tienes prisa, la completas luego.</p></div>
+        <div class="step"><small>Paso 2</small><h3>Añade lo que pasa</h3><p>Tipo de incidencia, fila, árbol y una nota. Si hay que volver a mirarla, pon una fecha de revisión.</p></div>
+        <div class="step"><small>Paso 3</small><h3>Tu equipo lo ve en el mapa</h3><p>Aparece en el móvil de todos. Cuando se resuelve, se marca como resuelta.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="soft">
+    <div class="wrap split">
+      <div class="phone"><img src="img/app-movil-lista.webp" width="585" height="1266" loading="lazy" alt="Lista de incidencias en el móvil con fotos, tipo, fila y árbol"></div>
+      <div class="txt">
+        <p class="eyebrow">En el campo</p>
+        <h2>Todo lo pendiente, a mano en el bolsillo</h2>
+        <p>Busca por título, filtra por tipo o por parcela y ve directo al árbol en el mapa.</p>
+        <ul class="checks">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span><b>Avisos de revisión</b>La app te recuerda las incidencias que tocan revisar.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span><b>Funciona con poca cobertura</b>Guarda primero en el móvil y sube los cambios cuando hay conexión.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span><b>Satélite, calles o relieve</b>Elige la capa de mapa que mejor se vea en tu finca.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="ordenador">
+    <div class="wrap">
+      <div class="head center">
+        <p class="eyebrow">En el ordenador</p>
+        <h2>La finca entera en pantalla grande</h2>
+        <p>Entra con el mismo correo y contraseña de la app. Sin instalar nada, desde el navegador.</p>
+      </div>
+      <div class="split">
+        <ul class="checks" style="margin:0">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span><b>Lista y mapa a la vez</b>Pulsa una incidencia de la lista y el mapa vuela hasta su árbol.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span><b>Resumen de un vistazo</b>Pendientes, para revisar y resueltas, siempre arriba.</span></li>
+        </ul>
+        <ul class="checks" style="margin:0">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span><b>Fotos y vídeos en grande</b>Revisa con calma lo que tu equipo apuntó en el campo.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span><b>Atajos de teclado</b>Pulsa / para buscar y N para una incidencia nueva.</span></li>
+        </ul>
+      </div>
+      <div class="wide">
+        <div class="browser">
+          <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>CampControl · Las Largas</span></div>
+          <img src="img/app-ordenador.webp" width="1600" height="1000" loading="lazy" alt="Vista de escritorio de CampControl con resumen, lista de incidencias y mapa">
+        </div>
+      </div>
+      <div class="cta"><a class="btn btn-dark" href="app/">Entrar en CampControl</a></div>
+    </div>
+  </section>
+
+  <section class="soft">
+    <div class="wrap split flip">
+      <div class="panel" aria-label="Ejemplo de historial de cambios">
+        <div class="panel-head">Historial <span>Últimos 7 días</span></div>
+        <div class="li"><span class="who" style="background:#2c5a40">AR</span><div class="t"><b><span class="act add">Añadió</span>Gotero atascado</b><span>Antonio · Trabajador</span></div><time>09:14</time></div>
+        <div class="li"><span class="who" style="background:#8a5a2b">MG</span><div class="t"><b><span class="act del">Borró</span>Rama partida por el viento</b><span>Manuel · Trabajador</span></div><time>Ayer</time></div>
+        <div class="li"><span class="who" style="background:#2c5a40">AR</span><div class="t"><b><span class="act edit">Cambió</span>Piojo rojo en fruta</b><span>Antonio · Trabajador</span></div><time>Lun</time></div>
+        <div class="li"><span class="who" style="background:#1c3d2b">EP</span><div class="t"><b><span class="act add">Añadió</span>Hojas amarillas en la copa</b><span>Enrique · Dueño</span></div><time>Dom</time></div>
+      </div>
+      <div class="txt">
+        <p class="eyebrow">Control para el dueño</p>
+        <h2>Sabes quién ha hecho cada cambio</h2>
+        <p>El dueño de la finca ve un historial con todo lo que se ha añadido, cambiado o borrado, quién lo hizo y cuándo.</p>
+        <ul class="checks">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span><b>Lo borrado se puede recuperar</b>Desde el historial, si alguien borra algo por error.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span><b>Invitación con código</b>Tus trabajadores se unen a la finca con un código de 6 letras.</span></li>
+        </ul>
       </div>
     </div>
   </section>
 
   <section id="funciones">
-    <div class="wrap rows">
-      <div class="row">
-        <div class="row-text">
-          <h3>Todas las incidencias, ordenadas</h3>
-          <p>Además del mapa, tienes una lista con todo lo que hay abierto en la finca. Busca por título y ve directo al árbol.</p>
-          <ul>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Fotos y vídeos en cada incidencia</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Mapa en vista satélite, calles o relieve</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Varias fincas en la misma cuenta</li>
-          </ul>
-        </div>
-        <div class="panel" aria-label="Ejemplo de lista de incidencias">
-          <div class="panel-head">Incidencias <span>Finca Las Largas · 4 abiertas</span></div>
-          <div class="filter"><span class="on">Todas</span><span>Riego</span><span>Plagas</span><span>Poda</span></div>
-          <div class="list-item"><i class="dot" style="background:var(--orange)"></i><div class="t"><b>Hojas amarillas en la copa</b><span>Fila 7, árbol 21 · 2 fotos, 1 vídeo</span></div><time>Hoy</time></div>
-          <div class="list-item"><i class="dot" style="background:var(--orange)"></i><div class="t"><b>Gotero atascado</b><span>Fila 12, árbol 4 · 1 foto</span></div><time>Hoy</time></div>
-          <div class="list-item"><i class="dot" style="background:#c9a227"></i><div class="t"><b>Piojo rojo en fruta</b><span>Fila 3, árboles 8 a 15 · 3 fotos</span></div><time>Lun</time></div>
-          <div class="list-item"><i class="dot" style="background:#c9a227"></i><div class="t"><b>Rama partida por el viento</b><span>Fila 9, árbol 30 · 1 foto</span></div><time>Sáb</time></div>
-        </div>
-      </div>
-
-      <div class="row flip">
-        <div class="row-text">
-          <h3>Sabes quién ha hecho cada cambio</h3>
-          <p>El dueño de la finca tiene un historial con todo lo que se ha añadido o borrado, quién lo hizo y cuándo.</p>
-          <ul>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Los cambios llegan a todos los móviles al momento</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Los borrados también quedan registrados</li>
-          </ul>
-        </div>
-        <div class="panel row-panel" aria-label="Ejemplo de historial de cambios">
-          <div class="panel-head">Historial <span>Últimos 7 días</span></div>
-          <div class="list-item"><span class="who" style="background:#2c5a40">AR</span><div class="t"><b>Añadió «Gotero atascado»</b><span>Antonio Ruiz · Trabajador</span></div><time>09:14</time></div>
-          <div class="list-item"><span class="who" style="background:#8a5a2b">MG</span><div class="t"><b>Borró «Rama partida»</b><span>Manuel García · Trabajador</span></div><time>Ayer</time></div>
-          <div class="list-item"><span class="who" style="background:#2c5a40">AR</span><div class="t"><b>Añadió «Piojo rojo en fruta»</b><span>Antonio Ruiz · Trabajador</span></div><time>Lun</time></div>
-          <div class="list-item"><span class="who" style="background:#1c3d2b">EP</span><div class="t"><b>Invitó a Manuel García</b><span>Enrique · Dueño</span></div><time>Dom</time></div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="soft" id="ordenador">
-    <div class="wrap row">
-      <div class="row-text">
-        <h3>También desde el ordenador</h3>
-        <p>Entra en la web con el mismo correo y contraseña de la app y verás tus fincas, el mapa, las incidencias con sus fotos y el historial en pantalla grande.</p>
-        <ul>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Los mismos datos que en el móvil, al momento</li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Sin instalar nada: funciona en el navegador</li>
-        </ul>
-        <div class="cta" style="margin-top:24px"><a class="btn btn-primary" href="app/">Entrar en CampControl</a></div>
-      </div>
-      <div class="panel" aria-label="Ejemplo de la pantalla de acceso">
-        <div class="panel-head">Entrar <span>campcontrol</span></div>
-        <div style="padding:22px 18px;display:grid;gap:12px;font-size:14px">
-          <div><div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px">CORREO</div><div style="border:1px solid var(--line);border-radius:8px;padding:11px 12px;background:var(--bg-soft);color:var(--muted)">tu@correo.com</div></div>
-          <div><div style="font-size:12px;font-weight:600;color:var(--muted);margin-bottom:6px">CONTRASEÑA</div><div style="border:1px solid var(--line);border-radius:8px;padding:11px 12px;background:var(--bg-soft);color:var(--muted)">••••••••</div></div>
-          <div style="background:var(--green);color:#fff;border-radius:8px;padding:12px;text-align:center;font-weight:600">Entrar</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section>
     <div class="wrap">
       <div class="head">
-        <h2>Pensada para dueños y trabajadores</h2>
-        <p>Cada finca tiene su equipo. El dueño invita a su gente y todos trabajan sobre el mismo mapa.</p>
+        <p class="eyebrow">Funciones</p>
+        <h2>Más allá de las incidencias</h2>
+        <p>Lo que hace falta para llevar una finca de cítricos, en la misma app.</p>
+      </div>
+      <div class="more">
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3z"/><path d="M9 4v13M15 7v13"/></svg><h3>Parcelas</h3><p>Dibuja tus parcelas en el mapa y las incidencias se asignan solas.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><path d="M9 3h6M10 3v5l-5 9a2 2 0 0 0 1.8 3h10.4a2 2 0 0 0 1.8-3l-5-9V3"/><path d="M7.5 14h9"/></svg><h3>Tratamientos</h3><p>Apunta qué producto se echó, en qué parcela y cuándo.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"><circle cx="7" cy="17" r="3.2"/><circle cx="18" cy="18" r="2"/><path d="M4 13V7h6l2 6h6.5a1.5 1.5 0 0 1 1.5 1.5V17"/></svg><h3>Recorrido con el tractor</h3><p>Graba la pasada y, si se acaba el producto, te guía para volver al punto exacto.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><h3>Recordatorios</h3><p>Pon fecha de revisión a una incidencia y la app te avisa ese día.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/></svg><h3>Informes</h3><p>Exporta incidencias y tratamientos a Excel o PDF.</p></div>
+        <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg><h3>Copias de seguridad</h3><p>Guarda una copia completa con fotos y vídeos, y recupérala cuando quieras.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="soft">
+    <div class="wrap">
+      <div class="head">
+        <p class="eyebrow">Para todo el equipo</p>
+        <h2>Dueños y trabajadores, en el mismo mapa</h2>
       </div>
       <div class="roles">
         <div class="role">
           <h3>Dueño de finca</h3>
           <p>Lleva el control de una o varias fincas.</p>
-          <ul>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Crea fincas y añade trabajadores</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Ve todas las incidencias</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Consulta el historial de cambios</li>
+          <ul class="checks">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span>Crea fincas e invita a su equipo con un código</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span>Ve todas las incidencias, parcelas y tratamientos</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span>Consulta el historial y recupera lo borrado</span></li>
           </ul>
         </div>
         <div class="role">
           <h3>Trabajador</h3>
           <p>Apunta lo que ve y lo marca cuando está resuelto.</p>
-          <ul>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Ve el mapa de sus fincas</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Crea incidencias con foto o vídeo</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg>Edita y borra las de todo el equipo</li>
+          <ul class="checks">
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span>Se une a la finca con el código del dueño</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span>Crea incidencias con foto o vídeo</span></li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span>Edita y resuelve las de todo el equipo</span></li>
           </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <section id="instalar" class="soft">
+  <section id="instalar">
     <div class="wrap install">
       <div>
         <div class="head" style="margin-bottom:24px">
-          <h2>Instalación</h2>
-          <p>CampControl se instala con un archivo APK, sin pasar por Google Play. Solo hay que hacerlo una vez.</p>
+          <p class="eyebrow">Instalación</p>
+          <h2>Instálala en tu Android</h2>
+          <p>CampControl se instala con un archivo APK, sin pasar por Google Play. Solo hay que hacerlo una vez; las versiones nuevas se instalan encima sin perder nada.</p>
         </div>
         <a class="btn btn-primary js-apk" href="#">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
           Descargar APK
         </a>
-        <p class="note">Android puede avisar de que la app no viene de Google Play. Es normal con cualquier APK; descárgala solo desde esta página.</p>
+        <p class="note">Android avisa de que la app no viene de Google Play. Es normal con cualquier APK; descárgala solo desde esta página.</p>
       </div>
       <ol>
         <li><div><b>Descarga el archivo</b><span>Abre esta página desde el móvil y pulsa «Descargar APK».</span></div></li>
         <li><div><b>Ábrelo</b><span>Toca la notificación de descarga o busca el archivo en Descargas.</span></div></li>
         <li><div><b>Permite la instalación</b><span>Si te lo pide, activa «Permitir de esta fuente» para tu navegador y vuelve atrás.</span></div></li>
-        <li><div><b>Acepta los permisos</b><span>Cámara y ubicación, para poder hacer fotos y situarlas en el mapa.</span></div></li>
+        <li><div><b>Entra con tu cuenta</b><span>Acepta cámara y ubicación, entra con tu correo y elige tu finca.</span></div></li>
       </ol>
     </div>
   </section>
 
-  <section id="preguntas">
+  <section id="preguntas" class="soft">
     <div class="wrap">
-      <div class="head"><h2>Preguntas frecuentes</h2></div>
+      <div class="head center"><p class="eyebrow">Preguntas</p><h2>Preguntas frecuentes</h2></div>
       <div class="faq">
         <details>
+          <summary>¿Necesito instalar algo en el ordenador?</summary>
+          <p>No. Entra en «Entrar desde el ordenador» con el mismo correo y contraseña de la app. Funciona en cualquier navegador.</p>
+        </details>
+        <details>
           <summary>¿Funciona en iPhone?</summary>
-          <p>La app para instalar es solo para Android. Desde un iPhone o un ordenador puedes entrar en la versión web con tu correo y contraseña.</p>
+          <p>La app para instalar es solo para Android. Desde un iPhone puedes usar la versión web con tu cuenta.</p>
         </details>
         <details>
           <summary>¿Por qué no está en Google Play?</summary>
@@ -388,11 +420,15 @@ footer{border-top:1px solid var(--line);padding:40px 0;margin-top:clamp(64px,8vw
         </details>
         <details>
           <summary>¿Puedo llevar varias fincas?</summary>
-          <p>Sí. Cada finca tiene su propio mapa, sus incidencias y su equipo.</p>
+          <p>Sí. Cada finca tiene su propio mapa, sus incidencias y su equipo, y cambias de una a otra desde arriba.</p>
+        </details>
+        <details>
+          <summary>¿Qué pasa si no hay cobertura en la finca?</summary>
+          <p>Todo se guarda primero en el móvil. Cuando vuelve la conexión, se sube solo y le llega al resto del equipo.</p>
         </details>
         <details>
           <summary>¿Cómo se actualiza?</summary>
-          <p>Descarga el APK nuevo desde esta página e instálalo encima del anterior. Las incidencias están guardadas en la nube y no se pierden.</p>
+          <p>Descarga el APK nuevo desde esta página e instálalo encima del anterior. No se pierde nada.</p>
         </details>
       </div>
     </div>
@@ -403,9 +439,9 @@ footer{border-top:1px solid var(--line);padding:40px 0;margin-top:clamp(64px,8vw
       <div class="final">
         <div>
           <h2>Empieza a usarla en tu finca</h2>
-          <p>Descarga la app o escríbenos a <a class="js-mail" href="mailto:contacto@campcontrol.es">contacto@campcontrol.es</a> si quieres que te ayudemos a ponerla en marcha.</p>
+          <p>Descárgala en el móvil, crea tu finca e invita a tu equipo. Desde el ordenador lo tendrás todo a la vista.</p>
         </div>
-        <div class="cta" style="margin-top:0">
+        <div class="cta" style="margin-top:0;justify-content:flex-start">
           <a class="btn btn-primary js-apk" href="#">Descargar APK</a>
           <a class="btn btn-secondary" href="app/">Entrar en la web</a>
         </div>
@@ -415,14 +451,17 @@ footer{border-top:1px solid var(--line);padding:40px 0;margin-top:clamp(64px,8vw
 </main>
 
 <footer>
-  <div class="wrap foot">
-    <span>© <span id="year">2026</span> CampControl · Cantillana, Sevilla</span>
-    <nav aria-label="Pie de página">
-      <a href="#como-funciona">Cómo funciona</a>
-      <a href="#instalar">Instalación</a>
-      <a href="#preguntas">Preguntas</a>
-      <a class="js-mailbtn" href="mailto:contacto@campcontrol.es">Contacto</a>
-    </nav>
+  <div class="wrap">
+    <div class="foot">
+      <div>
+        <a class="brand" href="#inicio"><img src="icon-192.png" alt="" width="26" height="26" style="border-radius:7px">CampControl</a>
+        <p>Incidencias, parcelas y tratamientos de fincas de cítricos. Hecho en Cantillana, Sevilla.</p>
+      </div>
+      <div><h4>Producto</h4><ul><li><a href="#como-funciona">Cómo funciona</a></li><li><a href="#ordenador">En el ordenador</a></li><li><a href="#funciones">Funciones</a></li></ul></div>
+      <div><h4>Empezar</h4><ul><li><a class="js-apk" href="#">Descargar APK</a></li><li><a href="app/">Entrar en la web</a></li><li><a href="#instalar">Instalación</a></li></ul></div>
+      <div><h4>Ayuda</h4><ul><li><a href="#preguntas">Preguntas frecuentes</a></li><li><a class="js-mailbtn" href="mailto:contacto@campcontrol.es">Contacto</a></li></ul></div>
+    </div>
+    <p class="copy">© <span id="year">2026</span> CampControl</p>
   </div>
 </footer>
 
@@ -430,52 +469,12 @@ footer{border-top:1px solid var(--line);padding:40px 0;margin-top:clamp(64px,8vw
 /* ===== Configuración ===== */
 const CONFIG = {
   apkUrl: "https://github.com/EnriquePerezCamacho/NaranjasPerez/releases/latest/download/campcontrol.apk",
-  version: "1.0",
   email: "contacto@campcontrol.es"
 };
 /* ========================= */
 document.querySelectorAll(".js-apk").forEach(a => { a.href = CONFIG.apkUrl; a.rel = "noopener"; });
-document.querySelectorAll(".js-ver").forEach(s => s.textContent = CONFIG.version);
-document.querySelectorAll(".js-mail").forEach(a => { a.href = "mailto:" + CONFIG.email; a.textContent = CONFIG.email; });
 document.querySelectorAll(".js-mailbtn").forEach(a => a.href = "mailto:" + CONFIG.email);
 document.getElementById("year").textContent = new Date().getFullYear();
-
-/* Vista satélite de ejemplo */
-(function(){
-  const c = document.getElementById("orchard"), ctx = c.getContext("2d");
-  const W = c.width, H = c.height;
-  let s = 11; const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
-  ctx.fillStyle = "#8b7b57"; ctx.fillRect(0,0,W,H);
-  for (let i = 0; i < 2500; i++){ ctx.fillStyle = `rgba(${r()>.5?60:200},${r()>.5?50:180},30,.07)`; ctx.fillRect(r()*W, r()*H, 3, 3); }
-  ctx.save(); ctx.translate(W/2,H/2); ctx.rotate(-0.18); ctx.translate(-W/2,-H/2);
-  ctx.fillStyle = "rgba(225,210,170,.6)"; ctx.fillRect(-200, 520, W+400, 22);
-  const trees = [];
-  for (let y = -60; y < H + 80; y += 52){
-    if (Math.abs(y - 531) < 30) continue;
-    for (let x = -60; x < W + 80; x += 50){
-      if (r() < .03) continue;
-      trees.push({x: x + (r()-.5)*5, y: y + (r()-.5)*5, rad: 17 + r()*5});
-    }
-  }
-  for (const t of trees){ ctx.fillStyle = "rgba(20,25,10,.35)"; ctx.beginPath(); ctx.arc(t.x+4, t.y+5, t.rad, 0, 7); ctx.fill(); }
-  for (const t of trees){
-    const g = ctx.createRadialGradient(t.x-t.rad*.4, t.y-t.rad*.4, 1, t.x, t.y, t.rad);
-    g.addColorStop(0, "#6f9f58"); g.addColorStop(1, "#244a28");
-    ctx.fillStyle = g; ctx.beginPath(); ctx.arc(t.x, t.y, t.rad, 0, 7); ctx.fill();
-  }
-  ctx.restore();
-  function pin(x, y, main){
-    ctx.fillStyle = "rgba(0,0,0,.25)"; ctx.beginPath(); ctx.ellipse(x, y+2, 9, 4, 0, 0, 7); ctx.fill();
-    ctx.fillStyle = main ? "#e46a17" : "#ffffff";
-    ctx.beginPath(); ctx.moveTo(x, y);
-    ctx.bezierCurveTo(x-18, y-20, x-13, y-42, x, y-42);
-    ctx.bezierCurveTo(x+13, y-42, x+18, y-20, x, y); ctx.fill();
-    ctx.fillStyle = main ? "#fff" : "#e46a17"; ctx.beginPath(); ctx.arc(x, y-27, 6, 0, 7); ctx.fill();
-  }
-  pin(170, 300, false); pin(430, 220, false); pin(470, 640, false);
-  ctx.strokeStyle = "rgba(255,255,255,.9)"; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(300, 470, 30, 0, 7); ctx.stroke();
-  pin(300, 470, true);
-})();
 </script>
 </body>
 </html>

@@ -1,0 +1,94 @@
+/* CampControl en el ordenador (pantallas de 1100 px o más, fuera de la APK).
+   Menú lateral fijo, lista de incidencias junto al mapa, ventanas centradas y fichas en varias columnas.
+   Todo cuelga de body.pc, que pone js/escritorio.js; en el móvil no cambia nada. */
+
+body.pc{display:grid;grid-template-columns:248px minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);
+  grid-template-areas:"nav header" "nav main"}
+
+/* ---------- Cabecera ---------- */
+body.pc header{grid-area:header;background:var(--panel);color:var(--ink);border-bottom:1px solid var(--line);padding:10px 24px;gap:14px;min-height:60px}
+body.pc .finca-btn{font-size:1.2rem;padding:6px 10px;margin-left:-10px;border-radius:10px}
+body.pc .finca-btn:hover{background:var(--bg)}
+body.pc .finca-btn .dot{display:none}
+body.pc #count{opacity:1;color:var(--muted);font-size:.92rem}
+body.pc .sync-off{border-color:var(--line);color:var(--ink)}
+body.pc .icon-btn:hover{background:var(--bg)}
+body.pc .icon-btn:active{background:var(--line)}
+body.pc .menu{top:58px;right:20px}
+body.pc .menu button:hover{background:var(--bg)}
+
+/* ---------- Menú lateral ---------- */
+body.pc nav{grid-area:nav;flex-direction:column;align-items:stretch;gap:2px;background:var(--leaf);color:#fff;border:0;padding:18px 14px 16px;overflow:auto}
+body.pc nav > button{flex:none;flex-direction:row;justify-content:flex-start;gap:12px;padding:10px 12px;border-radius:10px;color:rgba(255,255,255,.78);font-size:.98rem;text-align:left}
+body.pc nav > button svg{width:21px;height:21px;flex:none}
+body.pc nav > button:hover{background:rgba(255,255,255,.08);color:#fff}
+body.pc nav > button[aria-pressed="true"]{background:rgba(255,255,255,.14);color:#fff}
+body.pc nav > button[aria-pressed="true"] svg{color:var(--orange)}
+body.pc #tabLista{display:none}
+
+.pc-brand{display:none}
+body.pc .pc-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.25rem;letter-spacing:-.01em;padding:2px 12px 20px}
+body.pc .pc-brand .dot{width:16px;height:16px;border-radius:50%;background:var(--orange);box-shadow:inset -3px -3px 0 rgba(0,0,0,.18)}
+.pc-sec{display:none}
+body.pc .pc-sec{display:block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);padding:22px 12px 6px}
+body.pc .pc-link{display:flex}
+.pc-link{display:none}
+body.pc .pc-pie{display:grid;gap:6px;margin-top:auto;padding:16px 12px 0;border-top:1px solid rgba(255,255,255,.12);font-size:.8rem;color:rgba(255,255,255,.6)}
+.pc-pie{display:none}
+.pc-pie kbd{display:inline-block;min-width:20px;text-align:center;font:600 .74rem/1 var(--font);padding:3px 5px;border-radius:5px;background:rgba(255,255,255,.12);color:#fff;margin-right:6px}
+
+/* ---------- Mapa con la lista al lado ---------- */
+body.pc.split #listView{right:auto;width:440px;border-right:1px solid var(--line);padding:18px 20px 28px;z-index:2}
+body.pc.split #map{left:440px}
+body.pc #listView .hint{display:none}
+body.pc .card{transition:border-color .12s ease,box-shadow .12s ease}
+body.pc .card:hover{border-color:var(--leaf);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+body.pc .card.sel{border-color:var(--orange);box-shadow:0 0 0 2px var(--orange)}
+body.pc .f-chip:hover,body.pc .seg button:hover{border-color:var(--leaf)}
+
+.pc-stats{display:none}
+body.pc .pc-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px}
+.pc-stats button{display:grid;gap:2px;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
+.pc-stats button:hover{border-color:var(--leaf)}
+.pc-stats b{font-size:1.45rem;line-height:1.1;font-variant-numeric:tabular-nums}
+.pc-stats span{font-size:.74rem;color:var(--muted)}
+.pc-stats button[aria-pressed="true"]{border-color:var(--leaf);box-shadow:inset 0 0 0 1px var(--leaf)}
+.pc-stats .rv b{color:var(--danger)}
+.pc-stats .ok b{color:var(--ok)}
+
+/* En el ordenador no hay GPS ni tractor: fuera la foto rápida, el seguimiento y el recorrido */
+body.pc #btnRapida,body.pc #btnTractor,body.pc #btnLocate{display:none!important}
+body.pc .camaras{right:24px;bottom:24px}
+body.pc .cam-det{height:48px;padding:0 18px 0 14px;background:var(--orange);color:var(--orange-ink);border-color:transparent;font-size:.95rem}
+body.pc .cam-det:hover{filter:brightness(1.05)}
+body.pc #btnFit{right:24px;bottom:88px;width:48px;height:48px}
+body.pc .map-btn:hover{border-color:var(--leaf)}
+
+/* ---------- Parcelas, tratamientos e historial a lo ancho ---------- */
+body.pc .view{padding:28px 40px 48px}
+body.pc #parcView > *,body.pc #tratView > *,body.pc #histView > *{max-width:1200px;margin-left:auto;margin-right:auto}
+body.pc .vhead h2{font-size:1.5rem}
+body.pc #parcCards,body.pc #tratCards{grid-template-columns:repeat(auto-fill,minmax(360px,1fr));align-items:start}
+body.pc #parcSummary,body.pc #psBox{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}
+body.pc #tratView .filters,body.pc #histView .filters{grid-template-columns:320px auto;justify-content:start;align-items:center}
+body.pc #histView .seg{max-width:520px}
+
+/* ---------- Ventanas centradas en vez de subir desde abajo ---------- */
+body.pc .sheet{align-items:center;padding:32px}
+body.pc .sheet .panel{border-radius:16px;max-width:640px;max-height:88vh;padding:22px 24px;box-shadow:0 24px 60px rgba(0,0,0,.3)}
+body.pc #sheet .panel{max-width:760px}
+body.pc .sheet.center .panel{max-width:440px}
+
+/* ---------- Entrada: presentación a la izquierda, formulario a la derecha ---------- */
+body.pc .bienv{display:grid;place-items:center;padding:40px}
+body.pc .bienv-in{max-width:1040px;width:100%;grid-template-columns:minmax(0,1fr) 440px;column-gap:72px;row-gap:16px;align-items:start}
+body.pc .bienv-logo{grid-column:1;grid-row:1;font-size:2.6rem}
+body.pc .bienv-sub{grid-column:1;grid-row:2;font-size:1.2rem;max-width:30ch;margin:0}
+body.pc .bienv-card{grid-column:2;grid-row:1 / span 3}
+body.pc .bienv-local{grid-column:2;grid-row:4}
+.pc-ventajas{display:none}
+body.pc .pc-ventajas{display:grid;grid-column:1;grid-row:3;gap:14px;margin:18px 0 0;padding:0;list-style:none;color:#fff}
+.pc-ventajas li{display:grid;grid-template-columns:22px 1fr;gap:12px;opacity:.92;line-height:1.45}
+.pc-ventajas li::before{content:"";width:10px;height:10px;margin-top:7px;border-radius:50%;background:var(--orange)}
+.pc-ventajas b{display:block}
+body.pc .cards > .empty{grid-column:1 / -1;padding:64px 10px}
