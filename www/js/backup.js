@@ -58,8 +58,15 @@ $('#inImport').onchange = async e => {
     const cab = await f.slice(0, 120).text();
     const n = cab.includes('"t":"meta"') ? await importarLineas(f) : await importarV1(f);
     await cargar(); renderTodo(); encuadrar(false); Notif.reprogramar();
-    toast(`Copia importada: ${n.inc} incidencias${n.parc ? `, ${n.parc} parcelas` : ''}${n.trat ? `, ${n.trat} tratamientos` : ''}`, 4000);
-  } catch (err) { console.error(err); toast('Ese archivo no es una copia válida de CampControl', 4000); }
+    const fallos = n.fallos ? `. ${plural(n.fallos, 'incidencia no se pudo importar', 'incidencias no se pudieron importar')} (${n.motivo})` : '';
+    toast(`Copia importada: ${n.inc} incidencias${n.parc ? `, ${n.parc} parcelas` : ''}${n.trat ? `, ${n.trat} tratamientos` : ''}${fallos}`, n.fallos ? 12000 : 4000);
+  } catch (err) {
+    console.error(err);
+    const m = err?.message || String(err);
+    if (m === 'formato' || err instanceof SyntaxError) toast('Ese archivo no es una copia válida de CampControl', 5000);
+    else if (/quota/i.test(m) || err?.name === 'QuotaExceededError') toast('No hay espacio libre en el móvil para importar la copia. Prueba a importarla desde el ordenador (versión web).', 12000);
+    else toast('No se pudo importar la copia: ' + m, 12000);
+  }
 };
 /* Solo sustituye un registro si el de la copia es igual o más reciente */
 async function fusionar(k, rec) {
@@ -68,7 +75,7 @@ async function fusionar(k, rec) {
   rec._sync = 1; await DB.put(k, rec); return true;
 }
 async function importarLineas(f) {
-  const dec = new TextDecoder(); const n = { inc: 0, parc: 0, trat: 0 };
+  const dec = new TextDecoder(); const n = { inc: 0, parc: 0, trat: 0, fallos: 0, motivo: '' };
   let resto = '', actual = null, ok = false, version = 2;
   const cerrar = async () => {
     if (!actual) return;
@@ -80,11 +87,15 @@ async function importarLineas(f) {
       item.fotos = (item._media || []).map((m, i) => mkMedia(new Blob(partes.get(i) || [], { type: m.type })));
       delete item._media;
     }
-    if (await fusionar('inc', normalizarInc(item).it)) n.inc++;
+    try { if (await fusionar('inc', normalizarInc(item).it)) n.inc++; }
+    catch (err) {
+      console.error(err); n.fallos++; n.motivo = err?.name === 'QuotaExceededError' || /quota/i.test(err?.message) ? 'no queda espacio' : (err?.message || 'error');
+      if (n.fallos >= 5 && n.inc === 0) throw err; // si no entra ninguna, no seguir leyendo 1 GB para nada
+    }
   };
   const linea = async l => {
     if (!l.trim()) return;
-    const o = JSON.parse(l);
+    let o; try { o = JSON.parse(l); } catch (e) { if (!ok) throw e; return; } // una línea rota (copia cortada) no tumba el resto
     if (o.t === 'meta') { ok = true; version = o.version || 2; }
     else if (o.t === 'parcela') { if (await fusionar('parcelas', o.rec)) n.parc++; }
     else if (o.t === 'trat') { if (await fusionar('trat', o.rec)) n.trat++; }
