@@ -119,6 +119,8 @@ section{padding:clamp(72px,9vw,120px) 0}
 
 .wide{margin-top:56px}
 .wide .browser{border-radius:12px;border-bottom:1px solid var(--line)}
+.shot-r,.wide-shot{border-radius:12px;border-bottom:1px solid var(--line)}
+.wide-shot{margin-bottom:40px}
 
 .panel{background:#fff;border:1px solid var(--line);border-radius:14px;box-shadow:0 1px 2px rgba(18,26,21,.04),0 18px 40px -20px rgba(18,26,21,.22);overflow:hidden}
 .panel-head{display:flex;justify-content:space-between;align-items:center;padding:14px 18px;border-bottom:1px solid var(--line);font-size:14px;font-weight:600}
@@ -194,6 +196,12 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
 .dl th,.dl td{text-align:left;padding:9px 20px;border-top:1px solid var(--line)}
 .dl th{font-size:12.5px;color:var(--muted);font-weight:600}
 .dl td:last-child,.dl th:last-child{text-align:right}
+.dl td{vertical-align:top}
+.dl td:first-child{white-space:nowrap}
+.dl td:first-child b{display:block;font-weight:600}
+.dl td:first-child small{display:block;font-size:12px;color:var(--muted)}
+.dl td:nth-child(2){color:#36413a;line-height:1.45}
+.dl .tabla{max-height:420px;overflow:auto}
 
 /* Guía de instalación */
 .inst-top{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:end;margin-bottom:48px}
@@ -314,9 +322,9 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
       <div class="shots">
         <div class="browser">
           <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>CampControl · Las Largas</span></div>
-          <img src="img/app-ordenador.webp" width="1600" height="1000" alt="CampControl en el ordenador: lista de incidencias con fotos a la izquierda y el mapa de la finca a la derecha">
+          <img src="img/app-ordenador.webp" width="1440" height="932" alt="CampControl en el ordenador: lista de incidencias con fotos de los naranjos y el mapa por satélite de la finca">
         </div>
-        <div class="phone"><img src="img/app-movil.webp" width="585" height="1266" alt="CampControl en el móvil: mapa de la finca con las incidencias marcadas"></div>
+        <div class="phone"><img src="img/app-movil.webp" width="585" height="1177" alt="CampControl en el móvil: mapa por satélite de la finca con sus parcelas e incidencias"></div>
       </div>
     </div>
   </div>
@@ -345,7 +353,7 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
 
   <section class="soft">
     <div class="wrap split">
-      <div class="phone"><img src="img/app-movil-lista.webp" width="585" height="1266" loading="lazy" alt="Lista de incidencias en el móvil con fotos, tipo, fila y árbol"></div>
+      <div class="phone"><img src="img/app-movil-lista.webp" width="585" height="1177" loading="lazy" alt="Lista de incidencias en el móvil con fotos, tipo, estado y parcela"></div>
       <div class="txt">
         <p class="eyebrow">En el campo</p>
         <h2>Todo lo pendiente, a mano en el bolsillo</h2>
@@ -379,7 +387,7 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
       <div class="wide">
         <div class="browser">
           <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>CampControl · Las Largas</span></div>
-          <img src="img/app-ordenador.webp" width="1600" height="1000" loading="lazy" alt="Vista de escritorio de CampControl con resumen, lista de incidencias y mapa">
+          <img src="img/app-capas.webp" width="1600" height="804" loading="lazy" alt="CampControl en el ordenador con el selector de capas del mapa: satélite, ortofoto PNOA, híbrido, callejero, topográfico y catastro">
         </div>
       </div>
       <div class="cta"><a class="btn btn-dark" href="app/">Entrar en CampControl</a></div>
@@ -388,20 +396,17 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
 
   <section class="soft">
     <div class="wrap split flip">
-      <div class="panel" aria-label="Ejemplo de historial de cambios">
-        <div class="panel-head">Historial <span>Últimos 7 días</span></div>
-        <div class="li"><span class="who" style="background:#2c5a40">AR</span><div class="t"><b><span class="act add">Añadió</span>Gotero atascado</b><span>Antonio · Trabajador</span></div><time>09:14</time></div>
-        <div class="li"><span class="who" style="background:#8a5a2b">MG</span><div class="t"><b><span class="act del">Borró</span>Rama partida por el viento</b><span>Manuel · Trabajador</span></div><time>Ayer</time></div>
-        <div class="li"><span class="who" style="background:#2c5a40">AR</span><div class="t"><b><span class="act edit">Cambió</span>Piojo rojo en fruta</b><span>Antonio · Trabajador</span></div><time>Lun</time></div>
-        <div class="li"><span class="who" style="background:#1c3d2b">EP</span><div class="t"><b><span class="act add">Añadió</span>Hojas amarillas en la copa</b><span>Enrique · Dueño</span></div><time>Dom</time></div>
+      <div class="browser shot-r">
+        <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>CampControl · Equipo</span></div>
+        <img src="img/app-equipo.webp" width="1600" height="803" loading="lazy" alt="Ventana del equipo de la finca: código para invitar, personas de la finca y su papel de dueño o trabajador">
       </div>
       <div class="txt">
         <p class="eyebrow">Control para el dueño</p>
-        <h2>Sabes quién ha hecho cada cambio</h2>
-        <p>El dueño de la finca ve un historial con todo lo que se ha añadido, cambiado o borrado, quién lo hizo y cuándo.</p>
+        <h2>Tu equipo, con su código y su historial</h2>
+        <p>Invitas a tu gente con un código, decides quién es dueño y quién trabajador, y ves en el historial todo lo que se ha añadido, cambiado o borrado, quién lo hizo y cuándo.</p>
         <ul class="checks">
           <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span><b>Lo borrado se puede recuperar</b>Desde el historial, si alguien borra algo por error.</span></li>
-          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span><b>Invitación con código</b>Tus trabajadores se unen a la finca con un código de 6 letras.</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span><b>Invitación con código</b>Tus trabajadores se unen con un código de 6 letras que puedes enviar por WhatsApp y cambiar cuando quieras.</span></li>
         </ul>
       </div>
     </div>
@@ -413,6 +418,10 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
         <p class="eyebrow">Funciones</p>
         <h2>Más allá de las incidencias</h2>
         <p>Lo que hace falta para llevar una finca de cítricos, en la misma app.</p>
+      </div>
+      <div class="browser wide-shot">
+        <div class="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span>CampControl · Parcelas</span></div>
+        <img src="img/app-parcelas.webp" width="1600" height="808" loading="lazy" alt="Parcelas de la finca con su variedad, superficie, incidencias pendientes y plazo de seguridad">
       </div>
       <div class="more">
         <div><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M3 7l6-3 6 3 6-3v13l-6 3-6-3-6 3z"/><path d="M9 4v13M15 7v13"/></svg><h3>Parcelas</h3><p>Dibuja tus parcelas en el mapa y las incidencias se asignan solas.</p></div>
@@ -497,8 +506,8 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
         <div class="dl" id="descargas" hidden>
           <div class="dl-top"><div><b class="js-dl-total">0</b><span>descargas en total</span></div><div><b class="js-dl-ver">–</b><span class="js-dl-fecha">última versión</span></div></div>
           <details>
-            <summary>Descargas por versión</summary>
-            <table><thead><tr><th>Versión</th><th>Fecha</th><th>Descargas</th></tr></thead><tbody class="js-dl-tabla"></tbody></table>
+            <summary>Versiones, cambios y descargas</summary>
+            <div class="tabla"><table><thead><tr><th>Versión</th><th>Qué cambió</th><th>Descargas</th></tr></thead><tbody class="js-dl-tabla"></tbody></table></div>
           </details>
         </div>
       </div>
@@ -536,7 +545,7 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
         <div>
           <h3>¿Por qué salen estos avisos?</h3>
           <p>Android avisa con cualquier APK que no venga de Google Play y de un desarrollador que todavía no conoce. Es una advertencia general, no quiere decir que CampControl tenga nada malo.</p>
-          <p>CampControl está hecha para ayudar a los agricultores, no para estafar ni robar datos. No tiene publicidad y solo pide lo que necesita para funcionar: cámara, ubicación, archivos y notificaciones. El código es público en <a href="https://github.com/EnriquePerezCamacho/NaranjasPerez" rel="noopener">GitHub</a>, así que cualquiera puede revisarlo.</p>
+          <p>CampControl está hecha para ayudar a los agricultores, no para estafar ni robar datos (puedes leer la <a href="privacidad.html">política de privacidad</a>). No tiene publicidad y solo pide lo que necesita para funcionar: cámara, ubicación, archivos y notificaciones. El código es público en <a href="https://github.com/EnriquePerezCamacho/NaranjasPerez" rel="noopener">GitHub</a>, así que cualquiera puede revisarlo.</p>
           <p>Ahora mismo se reparte como APK porque todavía la usan pocas personas. Cuando haya más usuarios, la idea es publicarla en Google Play y estos avisos desaparecerán. Descárgala siempre desde esta página.</p>
         </div>
       </div>
@@ -605,7 +614,7 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
         <button class="btn btn-primary" type="submit" id="fEnviar">Enviar mensaje</button>
         <p class="form-ok" id="fOk" hidden role="status">Gracias, mensaje recibido. Lo leeré en cuanto pueda.</p>
         <p class="form-err" id="fErr" hidden role="alert">No se ha podido enviar. Escríbeme directamente a <a class="js-mail" href="#"></a>.</p>
-        <p class="form-alt">También puedes escribirme a <a class="js-mail" href="#"></a></p>
+        <p class="form-alt">Al enviarlo aceptas que use tus datos para responderte, como explica la <a href="privacidad.html">política de privacidad</a>. También puedes escribirme a <a class="js-mail" href="#"></a></p>
       </form>
     </div>
   </section>
@@ -635,9 +644,9 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
       </div>
       <div><h4>Producto</h4><ul><li><a href="#como-funciona">Cómo funciona</a></li><li><a href="#ordenador">En el ordenador</a></li><li><a href="#funciones">Funciones</a></li></ul></div>
       <div><h4>Empezar</h4><ul><li><a class="js-apk" href="#">Descargar APK</a></li><li><a href="app/">Entrar en la web</a></li><li><a href="#instalar">Instalación</a></li></ul></div>
-      <div><h4>Ayuda</h4><ul><li><a href="#preguntas">Preguntas frecuentes</a></li><li><a href="#precio">Precio</a></li><li><a href="#contacto">Contacto y opiniones</a></li><li><a class="js-mail" href="#"></a></li></ul></div>
+      <div><h4>Ayuda</h4><ul><li><a href="#preguntas">Preguntas frecuentes</a></li><li><a href="#precio">Precio</a></li><li><a href="#contacto">Contacto y opiniones</a></li><li><a href="privacidad.html">Política de privacidad</a></li><li><a class="js-mail" href="#"></a></li></ul></div>
     </div>
-    <p class="copy">© <span id="year">2026</span> CampControl</p>
+    <p class="copy">© <span id="year">2026</span> CampControl · <a href="privacidad.html">Política de privacidad</a></p>
   </div>
 </footer>
 
@@ -652,14 +661,19 @@ const CONFIG = {
 document.querySelectorAll(".js-apk").forEach(a => { a.href = CONFIG.apkUrl; a.rel = "noopener"; });
 document.querySelectorAll(".js-mail").forEach(a => { a.href = "mailto:" + CONFIG.email; a.textContent = CONFIG.email; });
 
+const esc = t => String(t).replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 /* Contador de descargas: lo cuenta GitHub con cada APK descargada */
 (async () => {
   try {
     const r = await fetch(`https://api.github.com/repos/${CONFIG.repo}/releases?per_page=100`, { headers: { Accept: "application/vnd.github+json" } });
     if (!r.ok) return;
     const rel = (await r.json()).filter(x => !x.draft);
+    let resumen = {};
+    try { resumen = await (await fetch("cambios.json")).json(); } catch (_) {}
+    const cambioDe = x => resumen[x.tag_name] || ((x.body || "").match(/^Cambios:\s*(.+)$/m) || [])[1] || "";
     const filas = rel.map(x => ({
       ver: (x.name || x.tag_name).replace(/^(CampControl|Las Largas|Mi Naranjal)\s*/i, "") || x.tag_name,
+      cambio: cambioDe(x),
       fecha: new Date(x.published_at),
       n: x.assets.filter(a => a.name.endsWith(".apk")).reduce((s, a) => s + a.download_count, 0)
     }));
@@ -669,7 +683,7 @@ document.querySelectorAll(".js-mail").forEach(a => { a.href = "mailto:" + CONFIG
     document.querySelectorAll(".js-dl-total").forEach(e => e.textContent = total.toLocaleString("es-ES"));
     document.querySelector(".js-dl-ver").textContent = filas[0].ver;
     document.querySelector(".js-dl-fecha").textContent = "última versión · " + fmt(filas[0].fecha);
-    document.querySelector(".js-dl-tabla").innerHTML = filas.slice(0, 12).map(f => `<tr><td>${f.ver}</td><td>${fmt(f.fecha)}</td><td>${f.n}</td></tr>`).join("");
+    document.querySelector(".js-dl-tabla").innerHTML = filas.map(f => `<tr><td><b>${f.ver}</b><small>${fmt(f.fecha)}</small></td><td>${esc(f.cambio)}</td><td>${f.n}</td></tr>`).join("");
     document.getElementById("descargas").hidden = false;
     document.querySelector(".js-dl-hero").hidden = false;
   } catch (e) { /* sin conexión con GitHub: se queda oculto */ }

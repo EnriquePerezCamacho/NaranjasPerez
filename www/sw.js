@@ -1,6 +1,6 @@
 // Guarda la app y los trozos de mapa ya vistos para poder usarla en el campo con poca cobertura.
 // Solo se guardan los archivos de la propia app y trozos de mapa medibles (nunca respuestas del servidor de datos).
-const APP = 'campcontrol-app-v7';
+const APP = 'campcontrol-app-v8';
 const TILES = 'campcontrol-mapas-v2';
 const MAX_TILES = 3000;
 const JS = ['util', 'finca', 'db', 'map', 'notif', 'incidencias', 'parcelas', 'tratamientos', 'recorrido', 'informes', 'backup', 'config', 'sync', 'cuenta', 'main', 'escritorio'];

@@ -28,7 +28,7 @@ body.pc #tabLista{display:none}
 
 .pc-brand{display:none}
 body.pc .pc-brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:1.25rem;letter-spacing:-.01em;padding:2px 12px 20px}
-body.pc .pc-brand .dot{width:16px;height:16px;border-radius:50%;background:var(--orange);box-shadow:inset -3px -3px 0 rgba(0,0,0,.18)}
+body.pc .pc-brand img{width:30px;height:30px;border-radius:8px}
 .pc-sec{display:none}
 body.pc .pc-sec{display:block;font-size:.72rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,255,255,.5);padding:22px 12px 6px}
 body.pc .pc-link{display:flex}

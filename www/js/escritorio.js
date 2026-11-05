@@ -7,7 +7,7 @@
 
   /* ---------- Menú lateral: marca, accesos de la finca y atajos ---------- */
   const nav = $('nav');
-  nav.insertAdjacentHTML('afterbegin', '<div class="pc-brand"><span class="dot"></span>CampControl</div>');
+  nav.insertAdjacentHTML('afterbegin', '<div class="pc-brand"><img src="icon-192.png" alt="" width="30" height="30">CampControl</div>');
   const ICO = {
     mEquipo: '<path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 20c.5-3.5 3-5.5 6-5.5s5.5 2 6 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c1.8.8 3 2.6 3.3 5.2"/>',
     mHist: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
