@@ -1,9 +1,12 @@
 /* Tratamientos: registro tipo cuaderno de campo y plazo de seguridad */
-const UNIDADES = ['L/ha', 'kg/ha', 'cc/hL', 'g/hL', 'L/hL', '%', 'L total', 'kg total'];
-$('#tUnidad').innerHTML = UNIDADES.map(u => `<option>${u}</option>`).join('');
+const UNIDADES = ['L/ha', 'kg/ha', 'L/máq', 'kg/máq', 'cc/máq', 'g/máq', 'cc/hL', 'g/hL', 'L/hL', '%', 'L total', 'kg total'];
+/* Un tratamiento puede llevar varios productos (mezcla). Los antiguos tenían uno solo en producto/materia/dosis/unidad. */
+const productosDe = t => t.productos?.length ? t.productos
+  : (t.producto || t.materia || t.dosis ? [{ producto: t.producto || '', materia: t.materia || '', dosis: t.dosis || '', unidad: t.unidad || 'L/ha' }] : []);
+const prodTxt = p => [p.producto, p.dosis && `${p.dosis} ${p.unidad || ''}`.trim(), p.materia && `(${p.materia})`].filter(Boolean).join(' ');
 const recogerDesde = t => num(t.plazo) > 0 ? addDays(t.fecha, num(t.plazo)) : null;
 const parcelasTxt = t => t.parcelas?.length ? (t.parcelas.map(nombreParcela).filter(Boolean).join(', ') || 'Parcela borrada') : 'Toda la finca';
-const dosisTxt = t => [t.dosis && `${t.dosis} ${t.unidad || ''}`.trim(), t.caldo && `caldo ${fmtNum(num(t.caldo), 0)} L`].filter(Boolean).join(' · ');
+const caldoTxt = t => t.caldo ? `Caldo ${fmtNum(num(t.caldo), 0)} L` : '';
 let tratFiltro = '';
 
 function renderTrat() {
@@ -36,7 +39,8 @@ function renderTrat() {
     const el = document.createElement('div'); el.className = 'box';
     el.innerHTML = `<div class="top"><div class="grow"><div class="small">${fmtDate(t.fecha)}</div><h3>${esc(t.producto || (t.recorrido ? 'Recorrido sin completar' : 'Sin producto'))}</h3></div>
         <button class="btn sm" data-a="edit">Editar</button></div>
-      ${dosisTxt(t) || t.materia ? `<div class="small">${[t.materia, dosisTxt(t)].filter(Boolean).map(esc).join(' · ')}</div>` : ''}
+      ${productosDe(t).length > 1 || productosDe(t).some(p => p.dosis || p.materia) ? `<div class="small prod-txt">${productosDe(t).map(p => `<span>${esc(prodTxt(p))}</span>`).join('')}</div>` : ''}
+      ${caldoTxt(t) ? `<div class="small">${esc(caldoTxt(t))}</div>` : ''}
       <div class="pchips">${t.parcelas?.length
         ? t.parcelas.map(id => { const p = porId('parcelas', id); return `<span class="tag" style="--c:${p?.color || '#999'}"><i></i>${esc(p?.nombre || 'Parcela borrada')}</span>`; }).join('')
         : '<span class="tag" style="--c:#999"><i></i>Toda la finca</span>'}</div>
@@ -64,10 +68,15 @@ function abrirTratForm(t, copia = false) {
   if (copia) te.id = uid();
   const existe = !!porId('trat', te.id);
   $('#tratTitle').textContent = existe ? 'Editar tratamiento' : copia ? 'Repetir tratamiento' : 'Nuevo tratamiento';
-  for (const k of ['fecha', 'producto', 'materia', 'dosis', 'caldo', 'plazo', 'motivo', 'aplicador', 'notas'])
+  for (const k of ['fecha', 'caldo', 'plazo', 'motivo', 'aplicador', 'notas'])
     $('#t' + k[0].toUpperCase() + k.slice(1)).value = te[k] ?? '';
-  $('#tUnidad').value = te.unidad || 'L/ha';
-  $('#tProdList').innerHTML = [...new Set(vivos('trat').map(x => x.producto).filter(Boolean))].map(p => `<option value="${esc(p)}">`).join('');
+  const usados = vivos('trat').flatMap(productosDe);
+  $('#tProdList').innerHTML = [...new Set(usados.map(x => x.producto).filter(Boolean))].map(p => `<option value="${esc(p)}">`).join('');
+  $('#tMatList').innerHTML = [...new Set(usados.map(x => x.materia).filter(Boolean))].map(p => `<option value="${esc(p)}">`).join('');
+  $('#tProds').innerHTML = '';
+  const filas = productosDe(te);
+  while (filas.length < 3) filas.push({});
+  filas.forEach(p => filaProducto(p));
   $('#tBorrar').hidden = !existe;
   pintarParcTrat(); calcRecoger();
   $('#tratSheet').hidden = false; $('#tratSheet .panel').scrollTop = 0;
@@ -94,16 +103,46 @@ function calcRecoger() {
     : 'Pon el plazo de seguridad (lo indica la etiqueta del producto) para saber cuándo se puede recoger.';
 }
 $('#tFecha').oninput = calcRecoger; $('#tPlazo').oninput = calcRecoger;
-$('#tProducto').onchange = e => {
-  // Rellena con lo usado la última vez con ese producto
-  const prev = vivos('trat').filter(x => x.producto?.toLowerCase() === e.target.value.trim().toLowerCase()).sort((a, b) => b.fecha.localeCompare(a.fecha))[0];
-  if (!prev) return;
-  if (!$('#tMateria').value) $('#tMateria').value = prev.materia || '';
-  if (!$('#tDosis').value) { $('#tDosis').value = prev.dosis || ''; $('#tUnidad').value = prev.unidad || 'L/ha'; }
-  if (!$('#tPlazo').value) $('#tPlazo').value = prev.plazo || '';
-  if (!$('#tMotivo').value) $('#tMotivo').value = prev.motivo || '';
-  calcRecoger();
-};
+/* ---------- Filas de productos ---------- */
+function filaProducto(p = {}) {
+  const box = $('#tProds'), n = box.children.length + 1;
+  const el = document.createElement('div'); el.className = 'prod';
+  el.innerHTML = `<div class="prod-head"><span>Producto ${n}</span><button type="button" aria-label="Quitar producto" title="Quitar">×</button></div>
+    <div class="prod-l1">
+      <input class="p-prod" list="tProdList" maxlength="60" placeholder="Producto comercial" aria-label="Producto comercial">
+      <input class="p-dosis" inputmode="decimal" maxlength="12" placeholder="Dosis" aria-label="Dosis">
+      <select class="p-unidad" aria-label="Unidad">${UNIDADES.map(u => `<option>${u}</option>`).join('')}</select>
+    </div>
+    <input class="p-mat" list="tMatList" maxlength="60" placeholder="Materia activa (ej.: Fosetil-al 80 %)" aria-label="Materia activa">`;
+  el.querySelector('.p-prod').value = p.producto || '';
+  el.querySelector('.p-dosis').value = p.dosis || '';
+  el.querySelector('.p-unidad').value = UNIDADES.includes(p.unidad) ? p.unidad : 'L/ha';
+  if (p.unidad && !UNIDADES.includes(p.unidad)) { el.querySelector('.p-unidad').insertAdjacentHTML('afterbegin', `<option>${esc(p.unidad)}</option>`); el.querySelector('.p-unidad').value = p.unidad; }
+  el.querySelector('.p-mat').value = p.materia || '';
+  el.querySelector('.prod-head button').onclick = () => {
+    if (box.children.length <= 1) { el.querySelectorAll('input').forEach(i => i.value = ''); return; }
+    el.remove(); [...box.children].forEach((c, i) => c.querySelector('.prod-head span').textContent = `Producto ${i + 1}`);
+  };
+  el.querySelector('.p-prod').onchange = e => {
+    // Rellena con lo usado la última vez con ese producto
+    const nom = e.target.value.trim().toLowerCase(); if (!nom) return;
+    const prevT = vivos('trat').filter(x => productosDe(x).some(q => q.producto?.toLowerCase() === nom)).sort((a, b) => b.fecha.localeCompare(a.fecha))[0];
+    if (!prevT) return;
+    const prev = productosDe(prevT).find(q => q.producto?.toLowerCase() === nom);
+    if (!el.querySelector('.p-mat').value) el.querySelector('.p-mat').value = prev.materia || '';
+    if (!el.querySelector('.p-dosis').value) { el.querySelector('.p-dosis').value = prev.dosis || ''; el.querySelector('.p-unidad').value = UNIDADES.includes(prev.unidad) ? prev.unidad : 'L/ha'; }
+    if (!$('#tPlazo').value) $('#tPlazo').value = prevT.plazo || '';
+    if (!$('#tMotivo').value) $('#tMotivo').value = prevT.motivo || '';
+    calcRecoger();
+  };
+  box.appendChild(el);
+  return el;
+}
+$('#tProdAdd').onclick = () => filaProducto().querySelector('.p-prod').focus();
+const leerProductos = () => $$('#tProds .prod').map(el => ({
+  producto: el.querySelector('.p-prod').value.trim(), materia: el.querySelector('.p-mat').value.trim(),
+  dosis: el.querySelector('.p-dosis').value.trim(), unidad: el.querySelector('.p-unidad').value
+})).filter(p => p.producto || p.materia || p.dosis);
 $('#tCancel').onclick = () => { $('#tratSheet').hidden = true; te = null; };
 $('#tBorrar').onclick = async () => {
   const t = porId('trat', te.id); if (!t) return;
@@ -112,11 +151,15 @@ $('#tBorrar').onclick = async () => {
 };
 $('#tratForm').addEventListener('submit', async e => {
   e.preventDefault();
-  const producto = $('#tProducto').value.trim();
-  if (!producto) { toast('Escribe el nombre del producto'); $('#tProducto').focus(); return; }
+  const productos = leerProductos();
+  if (!productos.some(p => p.producto)) { toast('Escribe el nombre de al menos un producto'); $('#tProds .p-prod').focus(); return; }
+  const sinNombre = productos.findIndex(p => !p.producto);
+  if (sinNombre >= 0) { toast(`Al producto ${sinNombre + 1} le falta el nombre`); return; }
   const rec = {
-    id: te.id, creado: te.creado, fecha: $('#tFecha').value || today(), parcelas: te.parcelas, producto,
-    materia: $('#tMateria').value.trim(), dosis: $('#tDosis').value.trim(), unidad: $('#tUnidad').value,
+    id: te.id, creado: te.creado, fecha: $('#tFecha').value || today(), parcelas: te.parcelas, productos,
+    // Resumen en los campos de siempre, para informes antiguos, el historial y versiones anteriores de la app
+    producto: productos.map(p => p.producto).join(' + '), materia: productos.map(p => p.materia).filter(Boolean).join(' + '),
+    dosis: productos[0].dosis, unidad: productos[0].unidad,
     caldo: $('#tCaldo').value.trim(), plazo: $('#tPlazo').value.trim(), motivo: $('#tMotivo').value.trim(),
     aplicador: $('#tAplicador').value.trim(), notas: $('#tNotas').value.trim()
   };

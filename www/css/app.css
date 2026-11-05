@@ -335,3 +335,13 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 .por{font-size:.8rem;color:var(--muted)}
 .toast{position:fixed;left:50%;bottom:calc(172px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:2100;background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:999px;font-size:.9rem;max-width:90vw;text-align:center}
 @media (prefers-reduced-motion:no-preference){.sheet .panel{animation:up .18s ease-out}@keyframes up{from{transform:translateY(30px);opacity:.6}}}
+
+/* Tratamiento: varios productos (mezcla) */
+.prods{display:grid;gap:10px}
+.prod{border:1px solid var(--line);border-radius:12px;padding:10px;display:grid;gap:8px;background:var(--panel)}
+.prod-head{display:flex;justify-content:space-between;align-items:center;font-size:.78rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.prod-head button{border:0;background:none;color:var(--muted);font-size:1.2rem;line-height:1;padding:2px 6px;border-radius:6px}
+.prod-l1{display:grid;grid-template-columns:minmax(0,1fr) 60px 96px;gap:6px}
+.prod input,.prod select{width:100%;padding:11px 10px;border:1px solid var(--line);border-radius:10px;background:var(--bg);min-width:0}
+.prod-add{justify-self:start}
+.prod-txt{display:grid;gap:2px}

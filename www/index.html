@@ -220,13 +220,13 @@
     <h2 id="tratTitle">Nuevo tratamiento</h2>
     <div class="field"><label for="tFecha">Fecha</label><input id="tFecha" type="date"></div>
     <div class="field"><span class="lbl">Parcelas tratadas</span><div class="pick-row" id="tParcelas"></div><span class="hint" id="tParcHint"></span></div>
-    <div class="field"><label for="tProducto">Producto comercial</label><input id="tProducto" list="tProdList" maxlength="60" placeholder="Nombre del producto"></div>
-    <datalist id="tProdList"></datalist>
-    <div class="field"><label for="tMateria">Materia activa</label><input id="tMateria" maxlength="60" placeholder="Ej.: Abamectina 1,8 %"></div>
-    <div class="three">
-      <div class="field"><label for="tDosis">Dosis</label><input id="tDosis" inputmode="decimal" maxlength="12" placeholder="Ej.: 0,5"></div>
-      <div class="field"><label for="tUnidad">Unidad</label><select id="tUnidad"></select></div>
+    <div class="field"><span class="lbl">Productos</span>
+      <div class="prods" id="tProds"></div>
+      <button type="button" class="btn sm prod-add" id="tProdAdd">+ Añadir producto</button>
+      <span class="hint">Rellena uno por cada producto de la mezcla. Los recuadros vacíos no se guardan. «máq» es por máquina (cuba).</span>
     </div>
+    <datalist id="tProdList"></datalist>
+    <datalist id="tMatList"></datalist>
     <div class="two">
       <div class="field"><label for="tCaldo">Caldo (litros)</label><input id="tCaldo" inputmode="decimal" maxlength="10" placeholder="Ej.: 2000"></div>
       <div class="field"><label for="tPlazo">Plazo seguridad (días)</label><input id="tPlazo" inputmode="numeric" maxlength="4" placeholder="Ej.: 14"></div>

@@ -40,7 +40,7 @@ function tablasInforme(d) {
   if ($('#iTrat').checked) T.push({
     hoja: 'Tratamientos', titulo: 'Tratamientos fitosanitarios y abonados',
     cab: ['Fecha', 'Parcela(s)', 'Sup. (ha)', 'Producto', 'Materia activa', 'Dosis', 'Unidad', 'Caldo (L)', 'Plaga / motivo', 'P. seg. (días)', 'Recoger desde', 'Aplicador', 'Notas'],
-    filas: d.trat.map(t => [F(t.fecha), parcelasTxt(t), sup(t), t.producto, t.materia, N(t.dosis), t.unidad, N(t.caldo), t.motivo, N(t.plazo), F(recogerDesde(t)), t.aplicador, t.notas]),
+    filas: d.trat.flatMap(t => { const ps = productosDe(t); return (ps.length ? ps : [{}]).map(p => [F(t.fecha), parcelasTxt(t), sup(t), p.producto || '', p.materia || '', N(p.dosis), p.unidad || '', N(t.caldo), t.motivo, N(t.plazo), F(recogerDesde(t)), t.aplicador, t.notas]); }),
     anchos: [11, 20, 8, 20, 18, 7, 8, 9, 16, 8, 12, 14, 26]
   });
   if ($('#iInc').checked) T.push({
