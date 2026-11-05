@@ -7,9 +7,11 @@
 <meta name="description" content="CampControl registra las incidencias de tus naranjos con foto, vídeo y ubicación GPS, y las comparte con tu equipo. App para Android y versión web para el ordenador.">
 <meta property="og:title" content="CampControl">
 <meta property="og:description" content="Las incidencias de tu finca, en el mapa. App para Android y versión para el ordenador.">
-<meta property="og:image" content="img/app-ordenador.webp">
+<meta property="og:image" content="img/logo-512.png">
 <meta name="theme-color" content="#1c3d2b">
-<link rel="icon" href="icon-192.png">
+<link rel="icon" type="image/png" sizes="32x32" href="img/logo-32.png">
+<link rel="icon" type="image/png" sizes="192x192" href="img/logo-192.png">
+<link rel="apple-touch-icon" href="img/logo-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -55,7 +57,7 @@ p{margin:0}
 header{border-bottom:1px solid var(--line);background:rgba(255,255,255,.9);position:sticky;top:0;z-index:10;backdrop-filter:saturate(1.4) blur(10px)}
 .nav{display:flex;align-items:center;justify-content:space-between;height:66px;gap:16px}
 .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:18px;text-decoration:none;letter-spacing:-.01em}
-.brand img{width:28px;height:28px;border-radius:7px}
+.brand img{width:34px;height:34px}
 .nav-links{display:flex;align-items:center;gap:28px;font-size:15px;color:var(--muted)}
 .nav-links a{text-decoration:none}
 .nav-links a:not(.btn):hover{color:var(--ink)}
@@ -175,7 +177,57 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
 .foot .brand{margin-bottom:10px;color:var(--ink)}
 .copy{margin-top:40px;padding-top:20px;border-top:1px solid var(--line);font-size:13.5px}
 
+/* Precio */
+.price{max-width:760px;margin:0 auto;border:1px solid var(--line);border-radius:18px;padding:clamp(24px,4vw,40px);background:#fff;box-shadow:0 18px 40px -24px rgba(18,26,21,.25);position:relative}
+.price::before{content:"Ahora";position:absolute;top:-12px;left:clamp(24px,4vw,40px);background:var(--green);color:#fff;font-size:12px;font-weight:600;padding:4px 10px;border-radius:999px}
+.price-top{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap;padding-bottom:22px;border-bottom:1px solid var(--line)}
+.price-top h3{font-size:1.35rem}
+.price-top p{color:var(--muted);margin-top:4px}
+.price-num{text-align:right}
+.price-num b{display:block;font-size:3rem;line-height:1;letter-spacing:-.03em;font-weight:700}
+.price-num span{font-size:13px;color:var(--muted)}
+.price-list{grid-template-columns:1fr 1fr}
+
+/* Descargas */
+.dl{margin-top:28px;border:1px solid var(--line);border-radius:14px;background:#fff;overflow:hidden}
+.dl-top{display:grid;grid-template-columns:1fr 1fr}
+.dl-top > div{padding:18px 20px}
+.dl-top > div + div{border-left:1px solid var(--line)}
+.dl-top b{display:block;font-size:1.9rem;line-height:1.1;font-weight:700;font-variant-numeric:tabular-nums}
+.dl-top span{font-size:13.5px;color:var(--muted)}
+.dl details{border-top:1px solid var(--line)}
+.dl summary{cursor:pointer;padding:12px 20px;font-size:14.5px;font-weight:600;color:var(--green-2)}
+.dl table{width:100%;border-collapse:collapse;font-size:14px;font-variant-numeric:tabular-nums}
+.dl th,.dl td{text-align:left;padding:9px 20px;border-top:1px solid var(--line)}
+.dl th{font-size:12.5px;color:var(--muted);font-weight:600}
+.dl td:last-child,.dl th:last-child{text-align:right}
+
+/* Quién está detrás + formulario */
+.about{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(40px,6vw,80px);align-items:start}
+.about-txt h2{font-size:clamp(1.7rem,3vw,2.3rem);margin-bottom:22px}
+.about-txt p:not(.eyebrow){color:#36413a;font-size:1.06rem;margin-top:14px;max-width:60ch}
+.about-txt .firma{margin-top:26px;font-weight:600;color:var(--ink)}
+.about-txt .firma span{display:block;font-weight:400;font-size:14.5px;color:var(--muted)}
+.form{background:#fff;border:1px solid var(--line);border-radius:16px;padding:28px;display:grid;gap:16px;box-shadow:0 18px 40px -24px rgba(18,26,21,.25)}
+.form h3{font-size:1.3rem}
+.form-sub{color:var(--muted);font-size:15px;margin-top:-10px}
+.tipo{display:flex;gap:8px;flex-wrap:wrap}
+.tipo label{cursor:pointer}
+.tipo input{position:absolute;opacity:0;pointer-events:none}
+.tipo span{display:inline-block;font-size:14px;font-weight:500;border:1px solid var(--line);border-radius:999px;padding:7px 14px;color:var(--muted)}
+.tipo input:checked + span{border-color:var(--green);background:var(--green);color:#fff}
+.tipo input:focus-visible + span{outline:2px solid var(--orange);outline-offset:2px}
+.fld{display:grid;gap:6px;font-size:14px;font-weight:600}
+.fld input,.fld textarea{font:400 16px/1.4 var(--font);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:11px 12px;background:var(--bg-soft);resize:vertical}
+.fld input:focus,.fld textarea:focus{outline:none;border-color:var(--green-2);background:#fff;box-shadow:0 0 0 3px rgba(44,90,64,.15)}
+.form .btn{justify-self:start}
+.form-ok{color:#1f6b3f;font-weight:600;font-size:15px}
+.form-err{color:#b3261e;font-size:15px}
+.form-alt{font-size:14px;color:var(--muted)}
+.form-alt a,.form-err a{word-break:break-all}
+
 @media (max-width:960px){
+  .about{grid-template-columns:1fr}
   .nav-links a:not(.btn){display:none}
   .split,.install,.final{grid-template-columns:1fr}
   .split.flip > :first-child{order:0}
@@ -191,6 +243,8 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
   .steps,.roles,.more,.facts{grid-template-columns:1fr}
   .fact{border-right:0;border-bottom:1px solid var(--line)}
   .cta .btn{flex:1 1 100%}
+  .price-list{grid-template-columns:1fr}
+  .price-num{text-align:left}
   .nav-cta .btn-secondary{display:none}
   .shots .browser{display:none}
   .shots .phone{display:block;position:static;width:min(270px,78%);margin:0 auto -60px}
@@ -204,13 +258,14 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
 
 <header>
   <div class="wrap nav">
-    <a class="brand" href="#inicio" aria-label="CampControl, inicio"><img src="icon-192.png" alt="">CampControl</a>
+    <a class="brand" href="#inicio" aria-label="CampControl, inicio"><img src="img/logo-64.png" alt="" width="34" height="34">CampControl</a>
     <nav class="nav-links" aria-label="Secciones">
       <a href="#como-funciona">Cómo funciona</a>
       <a href="#ordenador">En el ordenador</a>
       <a href="#funciones">Funciones</a>
+      <a href="#precio">Precio</a>
       <a href="#instalar">Instalación</a>
-      <a href="#preguntas">Preguntas</a>
+      <a href="#contacto">Contacto</a>
       <span class="nav-cta">
         <a class="btn btn-secondary" href="app/">Entrar</a>
         <a class="btn btn-primary js-apk" href="#">Descargar</a>
@@ -223,7 +278,7 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
   <div class="hero">
     <div class="wrap">
       <div class="hero-text">
-        <span class="badge"><i></i>Android y ordenador</span>
+        <span class="badge"><i></i>Gratis durante la fase de pruebas</span>
         <h1>Las incidencias de tu finca, en el mapa</h1>
         <p class="lead">Haz una foto al naranjo, describe lo que le pasa y queda marcado en su sitio exacto. Tu equipo lo ve al momento en el móvil, y tú lo revisas con calma en el ordenador.</p>
         <div class="cta">
@@ -233,7 +288,7 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
           </a>
           <a class="btn btn-secondary" href="app/">Entrar desde el ordenador</a>
         </div>
-        <p class="small">Una sola cuenta para el móvil y el ordenador.</p>
+        <p class="small">Una sola cuenta para el móvil y el ordenador.<span class="js-dl-hero" hidden> · <b class="js-dl-total"></b> descargas</span></p>
       </div>
 
       <div class="shots">
@@ -379,7 +434,33 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
     </div>
   </section>
 
-  <section id="instalar">
+  <section id="precio">
+    <div class="wrap">
+      <div class="head center">
+        <p class="eyebrow">Precio</p>
+        <h2>Gratis mientras está en pruebas</h2>
+        <p>Úsala con todas sus funciones, sin tarjeta y sin compromiso. Antes de que haya cualquier cambio de precio, te avisaremos.</p>
+      </div>
+      <div class="price">
+        <div class="price-top">
+          <div><h3>Fase de pruebas</h3><p>Para fincas y equipos que quieran probarla ya</p></div>
+          <div class="price-num"><b>0&nbsp;€</b><span>sin límite de tiempo por ahora</span></div>
+        </div>
+        <ul class="checks price-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span>App para Android y versión para el ordenador</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span>Varias fincas y todo tu equipo</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span>Incidencias, parcelas, tratamientos e informes</span></li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-10"/></svg><span>Trato directo con quien hace la app</span></li>
+        </ul>
+        <div class="cta" style="justify-content:flex-start;margin-top:26px">
+          <a class="btn btn-primary js-apk" href="#">Descargar gratis</a>
+          <a class="btn btn-secondary" href="app/">Entrar desde el ordenador</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="instalar" class="soft">
     <div class="wrap install">
       <div>
         <div class="head" style="margin-bottom:24px">
@@ -392,6 +473,13 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
           Descargar APK
         </a>
         <p class="note">Android avisa de que la app no viene de Google Play. Es normal con cualquier APK; descárgala solo desde esta página.</p>
+        <div class="dl" id="descargas" hidden>
+          <div class="dl-top"><div><b class="js-dl-total">0</b><span>descargas en total</span></div><div><b class="js-dl-ver">–</b><span class="js-dl-fecha">última versión</span></div></div>
+          <details>
+            <summary>Descargas por versión</summary>
+            <table><thead><tr><th>Versión</th><th>Fecha</th><th>Descargas</th></tr></thead><tbody class="js-dl-tabla"></tbody></table>
+          </details>
+        </div>
       </div>
       <ol>
         <li><div><b>Descarga el archivo</b><span>Abre esta página desde el móvil y pulsa «Descargar APK».</span></div></li>
@@ -402,13 +490,17 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
     </div>
   </section>
 
-  <section id="preguntas" class="soft">
+  <section id="preguntas">
     <div class="wrap">
       <div class="head center"><p class="eyebrow">Preguntas</p><h2>Preguntas frecuentes</h2></div>
       <div class="faq">
         <details>
           <summary>¿Necesito instalar algo en el ordenador?</summary>
           <p>No. Entra en «Entrar desde el ordenador» con el mismo correo y contraseña de la app. Funciona en cualquier navegador.</p>
+        </details>
+        <details>
+          <summary>¿Cuánto cuesta?</summary>
+          <p>Ahora mismo es gratis, con todas las funciones, mientras está en fase de pruebas. Si más adelante pasa a ser de pago, avisaremos con tiempo a quien ya la use.</p>
         </details>
         <details>
           <summary>¿Funciona en iPhone?</summary>
@@ -434,6 +526,37 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
     </div>
   </section>
 
+  <section id="contacto" class="soft">
+    <div class="wrap about">
+      <div class="about-txt">
+        <p class="eyebrow">Quién está detrás</p>
+        <h2>Hecha en una finca de naranjos, para quien trabaja en el campo</h2>
+        <p>Me llamo Enrique y soy informático. Al terminar los estudios empecé a trabajar en la finca familiar de naranjos, en Cantillana, y desde el primer día he intentado ayudar con lo que sé hacer.</p>
+        <p>CampControl nació así: como una solución para mi padre y para mí. Queríamos dejar de apuntar en libretas qué árbol tenía una plaga o qué gotero estaba atascado, y que los dos pudiéramos verlo en el mapa, cada uno desde su móvil. Al ver lo útil que nos resultaba en el día a día, me propuse que también sirva a otros agricultores.</p>
+        <p>Ahora mismo la app está en fase de pruebas y la usamos pocas personas. Por eso cualquier comentario me ayuda muchísimo: lo que te guste, lo que no, lo que falla y lo que echas en falta. Leo todos los mensajes y la sigo mejorando con lo que me contáis, para que nunca se quede atrás.</p>
+        <p class="firma">Enrique Pérez<span>Creador de CampControl · Cantillana, Sevilla</span></p>
+      </div>
+      <form class="form" name="opiniones" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="formOpinion">
+        <input type="hidden" name="form-name" value="opiniones">
+        <p hidden><label>No rellenar: <input name="bot-field"></label></p>
+        <h3>Cuéntame qué te parece</h3>
+        <p class="form-sub">Opiniones, fallos o ideas. Te respondo personalmente.</p>
+        <div class="tipo" role="radiogroup" aria-label="Tipo de mensaje">
+          <label><input type="radio" name="tipo" value="Idea" checked><span>Idea</span></label>
+          <label><input type="radio" name="tipo" value="Algo falla"><span>Algo falla</span></label>
+          <label><input type="radio" name="tipo" value="Opinión"><span>Opinión</span></label>
+        </div>
+        <label class="fld" for="fNombre">Nombre<input id="fNombre" name="nombre" autocomplete="name" placeholder="Tu nombre"></label>
+        <label class="fld" for="fEmail">Correo o teléfono<input id="fEmail" name="contacto" autocomplete="email" placeholder="Para poder responderte (opcional)"></label>
+        <label class="fld" for="fMsg">Mensaje<textarea id="fMsg" name="mensaje" rows="5" required placeholder="Escribe aquí lo que quieras contarme"></textarea></label>
+        <button class="btn btn-primary" type="submit" id="fEnviar">Enviar mensaje</button>
+        <p class="form-ok" id="fOk" hidden role="status">Gracias, mensaje recibido. Lo leeré en cuanto pueda.</p>
+        <p class="form-err" id="fErr" hidden role="alert">No se ha podido enviar. Escríbeme directamente a <a class="js-mail" href="#"></a>.</p>
+        <p class="form-alt">También puedes escribirme a <a class="js-mail" href="#"></a></p>
+      </form>
+    </div>
+  </section>
+
   <section>
     <div class="wrap">
       <div class="final">
@@ -454,12 +577,12 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
   <div class="wrap">
     <div class="foot">
       <div>
-        <a class="brand" href="#inicio"><img src="icon-192.png" alt="" width="26" height="26" style="border-radius:7px">CampControl</a>
+        <a class="brand" href="#inicio"><img src="img/logo-64.png" alt="" width="34" height="34">CampControl</a>
         <p>Incidencias, parcelas y tratamientos de fincas de cítricos. Hecho en Cantillana, Sevilla.</p>
       </div>
       <div><h4>Producto</h4><ul><li><a href="#como-funciona">Cómo funciona</a></li><li><a href="#ordenador">En el ordenador</a></li><li><a href="#funciones">Funciones</a></li></ul></div>
       <div><h4>Empezar</h4><ul><li><a class="js-apk" href="#">Descargar APK</a></li><li><a href="app/">Entrar en la web</a></li><li><a href="#instalar">Instalación</a></li></ul></div>
-      <div><h4>Ayuda</h4><ul><li><a href="#preguntas">Preguntas frecuentes</a></li><li><a class="js-mailbtn" href="mailto:contacto@campcontrol.es">Contacto</a></li></ul></div>
+      <div><h4>Ayuda</h4><ul><li><a href="#preguntas">Preguntas frecuentes</a></li><li><a href="#precio">Precio</a></li><li><a href="#contacto">Contacto y opiniones</a></li><li><a class="js-mail" href="#"></a></li></ul></div>
     </div>
     <p class="copy">© <span id="year">2026</span> CampControl</p>
   </div>
@@ -468,12 +591,50 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
 <script>
 /* ===== Configuración ===== */
 const CONFIG = {
+  repo: "EnriquePerezCamacho/NaranjasPerez",
   apkUrl: "https://github.com/EnriquePerezCamacho/NaranjasPerez/releases/latest/download/campcontrol.apk",
-  email: "contacto@campcontrol.es"
+  email: "enriqueperezcamacho2001@gmail.com"
 };
 /* ========================= */
 document.querySelectorAll(".js-apk").forEach(a => { a.href = CONFIG.apkUrl; a.rel = "noopener"; });
-document.querySelectorAll(".js-mailbtn").forEach(a => a.href = "mailto:" + CONFIG.email);
+document.querySelectorAll(".js-mail").forEach(a => { a.href = "mailto:" + CONFIG.email; a.textContent = CONFIG.email; });
+
+/* Contador de descargas: lo cuenta GitHub con cada APK descargada */
+(async () => {
+  try {
+    const r = await fetch(`https://api.github.com/repos/${CONFIG.repo}/releases?per_page=100`, { headers: { Accept: "application/vnd.github+json" } });
+    if (!r.ok) return;
+    const rel = (await r.json()).filter(x => !x.draft);
+    const filas = rel.map(x => ({
+      ver: (x.name || x.tag_name).replace(/^(CampControl|Las Largas|Mi Naranjal)\s*/i, "") || x.tag_name,
+      fecha: new Date(x.published_at),
+      n: x.assets.filter(a => a.name.endsWith(".apk")).reduce((s, a) => s + a.download_count, 0)
+    }));
+    if (!filas.length) return;
+    const total = filas.reduce((s, f) => s + f.n, 0);
+    const fmt = d => d.toLocaleDateString("es-ES", { day: "numeric", month: "short", year: "numeric" });
+    document.querySelectorAll(".js-dl-total").forEach(e => e.textContent = total.toLocaleString("es-ES"));
+    document.querySelector(".js-dl-ver").textContent = filas[0].ver;
+    document.querySelector(".js-dl-fecha").textContent = "última versión · " + fmt(filas[0].fecha);
+    document.querySelector(".js-dl-tabla").innerHTML = filas.slice(0, 12).map(f => `<tr><td>${f.ver}</td><td>${fmt(f.fecha)}</td><td>${f.n}</td></tr>`).join("");
+    document.getElementById("descargas").hidden = false;
+    document.querySelector(".js-dl-hero").hidden = false;
+  } catch (e) { /* sin conexión con GitHub: se queda oculto */ }
+})();
+
+/* Formulario de opiniones (Netlify Forms) */
+const form = document.getElementById("formOpinion");
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  const btn = document.getElementById("fEnviar"), ok = document.getElementById("fOk"), err = document.getElementById("fErr");
+  ok.hidden = err.hidden = true; btn.disabled = true; btn.textContent = "Enviando…";
+  try {
+    const r = await fetch("/", { method: "POST", headers: { "Content-Type": "application/x-www-form-urlencoded" }, body: new URLSearchParams(new FormData(form)).toString() });
+    if (!r.ok) throw new Error(r.status);
+    form.reset(); ok.hidden = false;
+  } catch (_) { err.hidden = false; }
+  btn.disabled = false; btn.textContent = "Enviar mensaje";
+});
 document.getElementById("year").textContent = new Date().getFullYear();
 </script>
 </body>
