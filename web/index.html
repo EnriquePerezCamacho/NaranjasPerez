@@ -144,13 +144,6 @@ section{padding:clamp(72px,9vw,120px) 0}
 .role h3{font-size:1.3rem}
 .role > p{color:var(--muted);margin-top:8px}
 
-.install{display:grid;grid-template-columns:.9fr 1.1fr;gap:56px;align-items:start}
-.install ol{margin:0;padding:0;list-style:none;counter-reset:s;border:1px solid var(--line);border-radius:14px;background:#fff}
-.install li{counter-increment:s;display:grid;grid-template-columns:36px 1fr;gap:14px;padding:20px 22px;border-bottom:1px solid var(--line)}
-.install li:last-child{border-bottom:0}
-.install li::before{content:counter(s);width:28px;height:28px;border-radius:50%;background:var(--green);color:#fff;font-size:13px;font-weight:600;display:grid;place-items:center}
-.install li b{display:block;font-weight:600}
-.install li span{color:var(--muted);font-size:15.5px}
 .note{margin-top:24px;font-size:14.5px;color:var(--muted);border-left:2px solid var(--line);padding-left:14px}
 
 .faq{max-width:780px;margin:0 auto}
@@ -202,6 +195,25 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
 .dl th{font-size:12.5px;color:var(--muted);font-weight:600}
 .dl td:last-child,.dl th:last-child{text-align:right}
 
+/* Guía de instalación */
+.inst-top{display:grid;grid-template-columns:1.2fr .8fr;gap:48px;align-items:end;margin-bottom:48px}
+.inst-top .dl{margin-top:0}
+.guia{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:g}
+.guia li{counter-increment:g;background:#fff;border:1px solid var(--line);border-radius:16px;overflow:hidden;display:flex;flex-direction:column}
+.guia figure{margin:0;background:#0b0d0c;height:340px;flex:none;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;padding:12px}
+.guia figure::before{content:counter(g);position:absolute;top:12px;left:12px;width:32px;height:32px;border-radius:50%;background:var(--orange);color:#fff;font-weight:700;font-size:15px;display:grid;place-items:center;box-shadow:0 2px 8px rgba(0,0,0,.35)}
+.guia img{max-height:316px;width:auto;height:auto;max-width:100%;border-radius:10px}
+.guia li > div{padding:18px 20px 22px;display:grid;gap:6px}
+.guia b{font-weight:600;font-size:1.05rem}
+.guia span{color:var(--muted);font-size:15px;line-height:1.55}
+.guia strong{color:var(--ink);font-weight:600}
+.desliza{display:none}
+.aviso{margin-top:28px;display:grid;grid-template-columns:44px 1fr;gap:18px;background:#fff;border:1px solid var(--line);border-left:4px solid var(--green-2);border-radius:14px;padding:24px 26px}
+.aviso > svg{width:36px;height:36px;color:var(--green-2)}
+.aviso h3{font-size:1.15rem;margin-bottom:6px}
+.aviso p{color:#36413a;margin-top:8px;max-width:78ch}
+.aviso a{color:var(--green-2);font-weight:600}
+
 /* Quién está detrás + formulario */
 .about{display:grid;grid-template-columns:1.1fr .9fr;gap:clamp(40px,6vw,80px);align-items:start}
 .about-txt h2{font-size:clamp(1.7rem,3vw,2.3rem);margin-bottom:22px}
@@ -228,8 +240,10 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
 
 @media (max-width:960px){
   .about{grid-template-columns:1fr}
+  .inst-top{grid-template-columns:1fr;gap:28px}
+  .guia{grid-template-columns:1fr 1fr}
   .nav-links a:not(.btn){display:none}
-  .split,.install,.final{grid-template-columns:1fr}
+  .split,.final{grid-template-columns:1fr}
   .split.flip > :first-child{order:0}
   .facts{grid-template-columns:1fr 1fr}
   .fact:nth-child(2){border-right:0}
@@ -244,6 +258,12 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
   .fact{border-right:0;border-bottom:1px solid var(--line)}
   .cta .btn{flex:1 1 100%}
   .price-list{grid-template-columns:1fr}
+  .guia{display:flex;overflow-x:auto;scroll-snap-type:x mandatory;gap:14px;margin:0 -16px;padding:0 16px 8px}
+  .guia li{flex:0 0 84%;scroll-snap-align:center}
+  .desliza{display:block;font-size:14px;font-weight:600;color:var(--green-2);margin:0 0 12px}
+  .guia figure{height:380px}
+  .guia img{max-height:356px}
+  .aviso{grid-template-columns:1fr;padding:20px}
   .price-num{text-align:left}
   .nav-cta .btn-secondary{display:none}
   .shots .browser{display:none}
@@ -461,18 +481,19 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
   </section>
 
   <section id="instalar" class="soft">
-    <div class="wrap install">
-      <div>
-        <div class="head" style="margin-bottom:24px">
+    <div class="wrap">
+      <div class="inst-top">
+        <div class="head" style="margin-bottom:0">
           <p class="eyebrow">Instalación</p>
-          <h2>Instálala en tu Android</h2>
-          <p>CampControl se instala con un archivo APK, sin pasar por Google Play. Solo hay que hacerlo una vez; las versiones nuevas se instalan encima sin perder nada.</p>
+          <h2>Cómo instalarla en tu móvil, paso a paso</h2>
+          <p>CampControl se instala con un archivo APK, sin pasar por Google Play. Se tarda un minuto y solo hay que hacerlo una vez: las versiones nuevas se instalan encima sin perder nada.</p>
+          <div class="cta" style="justify-content:flex-start">
+            <a class="btn btn-primary js-apk" href="#">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
+              Descargar APK
+            </a>
+          </div>
         </div>
-        <a class="btn btn-primary js-apk" href="#">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7 10l5 5 5-5M5 20h14"/></svg>
-          Descargar APK
-        </a>
-        <p class="note">Android avisa de que la app no viene de Google Play. Es normal con cualquier APK; descárgala solo desde esta página.</p>
         <div class="dl" id="descargas" hidden>
           <div class="dl-top"><div><b class="js-dl-total">0</b><span>descargas en total</span></div><div><b class="js-dl-ver">–</b><span class="js-dl-fecha">última versión</span></div></div>
           <details>
@@ -481,12 +502,44 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
           </details>
         </div>
       </div>
-      <ol>
-        <li><div><b>Descarga el archivo</b><span>Abre esta página desde el móvil y pulsa «Descargar APK».</span></div></li>
-        <li><div><b>Ábrelo</b><span>Toca la notificación de descarga o busca el archivo en Descargas.</span></div></li>
-        <li><div><b>Permite la instalación</b><span>Si te lo pide, activa «Permitir de esta fuente» para tu navegador y vuelve atrás.</span></div></li>
-        <li><div><b>Entra con tu cuenta</b><span>Acepta cámara y ubicación, entra con tu correo y elige tu finca.</span></div></li>
+
+      <p class="desliza" aria-hidden="true">Desliza para ver los 6 pasos →</p>
+      <ol class="guia" aria-label="Pasos para instalar CampControl">
+        <li>
+          <figure><img src="img/instalar-paso-1.webp" width="540" height="920" loading="lazy" alt="Gestor de archivos, apartado Recientes, con el archivo campcontrol.apk marcado"></figure>
+          <div><b>Abre el archivo descargado</b><span>Entra en el <strong>Gestor de archivos</strong>, ve a <strong>Recientes</strong> o <strong>Descargas</strong> y pulsa <strong>campcontrol.apk</strong>.</span></div>
+        </li>
+        <li>
+          <figure><img src="img/instalar-paso-2.webp" width="540" height="470" loading="lazy" alt="Ventana ¿Quieres instalar esta aplicación? con el botón Instalar marcado"></figure>
+          <div><b>Pulsa «Instalar»</b><span>Android pregunta si quieres instalar CampControl. Dale a <strong>Instalar</strong>. Si te pide permiso para instalar desde el gestor de archivos, actívalo y vuelve atrás.</span></div>
+        </li>
+        <li>
+          <figure><img src="img/instalar-paso-3.webp" width="540" height="660" loading="lazy" alt="Aviso de Google Play Protect con el enlace Más detalles marcado"></figure>
+          <div><b>En el aviso, abre «Más detalles»</b><span>Sale un aviso de <strong>Google Play Protect</strong>. No pulses «Entendido»: toca <strong>Más detalles</strong>, con la flechita <strong>⌄</strong>.</span></div>
+        </li>
+        <li>
+          <figure><img src="img/instalar-paso-4.webp" width="540" height="785" loading="lazy" alt="Aviso de Google Play Protect desplegado con Instalar de todas formas marcado"></figure>
+          <div><b>Pulsa «Instalar de todas formas»</b><span>Al desplegarse aparece la opción <strong>Instalar de todas formas</strong>. Púlsala y la instalación sigue.</span></div>
+        </li>
+        <li>
+          <figure><img src="img/instalar-paso-5.webp" width="540" height="742" loading="lazy" alt="Aviso de Mi Protect en un móvil Xiaomi con los botones Saltar y Analizar marcados"></figure>
+          <div><b>Último aviso: cualquiera de los dos</b><span>En móviles <strong>Xiaomi, Redmi o Poco</strong> sale un aviso más de <strong>Mi Protect</strong>. Da igual que pulses <strong>Saltar</strong> o <strong>Analizar</strong>: las dos opciones terminan la instalación.</span></div>
+        </li>
+        <li>
+          <figure><img src="img/instalar-paso-6.webp" width="540" height="823" loading="lazy" alt="Pantalla de entrada de CampControl con correo y contraseña"></figure>
+          <div><b>Abre CampControl y entra</b><span>Entra con tu correo y contraseña, o crea una cuenta. Acepta los permisos de cámara y ubicación para poder situar las fotos en el mapa.</span></div>
+        </li>
       </ol>
+
+      <div class="aviso">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l8 3v6c0 4.5-3.4 8.3-8 9-4.6-.7-8-4.5-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+        <div>
+          <h3>¿Por qué salen estos avisos?</h3>
+          <p>Android avisa con cualquier APK que no venga de Google Play y de un desarrollador que todavía no conoce. Es una advertencia general, no quiere decir que CampControl tenga nada malo.</p>
+          <p>CampControl está hecha para ayudar a los agricultores, no para estafar ni robar datos. No tiene publicidad y solo pide lo que necesita para funcionar: cámara, ubicación, archivos y notificaciones. El código es público en <a href="https://github.com/EnriquePerezCamacho/NaranjasPerez" rel="noopener">GitHub</a>, así que cualquiera puede revisarlo.</p>
+          <p>Ahora mismo se reparte como APK porque todavía la usan pocas personas. Cuando haya más usuarios, la idea es publicarla en Google Play y estos avisos desaparecerán. Descárgala siempre desde esta página.</p>
+        </div>
+      </div>
     </div>
   </section>
 
