@@ -2,6 +2,14 @@
    Dentro de la APK no hace nada. */
 (() => {
   if (nativo()) return;
+
+  /* ---------- Volver a la web de presentación (solo en el navegador, en cualquier tamaño) ---------- */
+  const WEB = '../';
+  const flecha = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>';
+  // En el menú ⋮ (móvil y ordenador)
+  $('#mVer').insertAdjacentHTML('beforebegin', `<a class="mweb" href="${WEB}">${flecha}Volver a la web de FincApunte</a>`);
+  // En la pantalla de entrada
+  $('#bienv .bienv-in').insertAdjacentHTML('afterbegin', `<a class="bienv-web" href="${WEB}">${flecha}Volver a la web</a>`);
   const grande = matchMedia('(min-width: 1100px)');
   const esPC = () => document.body.classList.contains('pc');
 
@@ -28,6 +36,7 @@
   const copiarOcultos = () => enlaces.forEach(b => { b.hidden = $('#' + b.dataset.m).hidden; });
   new MutationObserver(copiarOcultos).observe($('#menu'), { subtree: true, attributes: true, attributeFilter: ['hidden'] });
   copiarOcultos();
+  nav.insertAdjacentHTML('beforeend', `<a class="pc-link pc-web" href="${WEB}">${flecha}Volver a la web</a>`);
   nav.insertAdjacentHTML('beforeend', `<div class="pc-pie"><span><kbd>/</kbd>Buscar incidencia</span><span><kbd>N</kbd>Nueva incidencia</span><span><kbd>Esc</kbd>Cerrar ventana</span></div>`);
 
   /* ---------- Resumen encima de la lista ---------- */

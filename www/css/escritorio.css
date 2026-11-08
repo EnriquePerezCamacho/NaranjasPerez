@@ -92,3 +92,13 @@ body.pc .pc-ventajas{display:grid;grid-column:1;grid-row:3;gap:14px;margin:18px 
 .pc-ventajas li::before{content:"";width:10px;height:10px;margin-top:7px;border-radius:50%;background:var(--orange)}
 .pc-ventajas b{display:block}
 body.pc .cards > .empty{grid-column:1 / -1;padding:64px 10px}
+
+/* Volver a la web (solo navegador) */
+.mweb{display:flex;align-items:center;gap:8px;padding:13px 16px;border-top:1px solid var(--line);color:var(--ink);text-decoration:none;font-size:.95rem}
+.mweb:hover{background:var(--bg)}
+.mweb svg,.bienv-web svg,.pc-web svg{width:18px;height:18px;flex:none}
+.bienv-web{display:inline-flex;align-items:center;gap:6px;color:#fff;opacity:.85;text-decoration:none;font-size:.9rem;justify-self:start;margin-bottom:6px}
+.bienv-web:hover{opacity:1;text-decoration:underline}
+body.pc .bienv-web{position:absolute;top:28px;left:36px}
+body.pc .pc-web{margin-top:14px;text-decoration:none;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;color:rgba(255,255,255,.78);font-size:.98rem}
+body.pc .pc-web:hover{background:rgba(255,255,255,.08);color:#fff}
