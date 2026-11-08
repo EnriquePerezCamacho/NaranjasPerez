@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Política de privacidad · CampControl</title>
-<meta name="description" content="Qué datos guarda CampControl, para qué se usan, con quién se comparten y cómo ejercer tus derechos.">
+<title>Política de privacidad · FincApunte</title>
+<meta name="description" content="Qué datos guarda FincApunte, para qué se usan, con quién se comparten y cómo ejercer tus derechos.">
 <meta name="theme-color" content="#1c3d2b">
 <link rel="icon" type="image/png" sizes="32x32" href="img/logo-32.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,19 +44,32 @@ th{font-size:13px;color:var(--muted);font-weight:600;background:var(--bg-soft)}
 footer{border-top:1px solid var(--line);padding:28px 0;color:var(--muted);font-size:14px}
 footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
 footer a{color:inherit}
+a{overflow-wrap:anywhere}
+@media (max-width:640px){
+  body{font-size:16px}
+  .tabla{border:0;overflow:visible}
+  .tabla table,.tabla tbody,.tabla tr,.tabla td{display:block;width:100%}
+  .tabla thead{display:none}
+  .tabla tr{border:1px solid var(--line);border-radius:12px;margin-bottom:12px;overflow:hidden}
+  .tabla td{border-bottom:1px solid var(--line)}
+  .tabla td:nth-child(2)::before{content:"Para qué: ";font-weight:600;color:var(--ink)}
+  .tabla td:nth-child(3)::before{content:"Base legal: ";font-weight:600;color:var(--ink)}
+  .tabla td:nth-child(3){color:var(--muted);font-size:14px}
+  .resumen{padding:18px}
+}
 </style>
 </head>
 <body>
 <header>
   <div class="wrap nav">
-    <a class="brand" href="./"><img src="img/logo-64.png" alt="" width="34" height="34">CampControl</a>
+    <a class="brand" href="./"><img src="img/logo-64.png" alt="" width="34" height="34">FincApunte</a>
     <a class="back" href="./">← Volver a la web</a>
   </div>
 </header>
 
 <main class="wrap">
   <h1>Política de privacidad</h1>
-  <p class="fecha">Última actualización: 5 de noviembre de 2026</p>
+  <p class="fecha">Última actualización: 8 de noviembre de 2026</p>
 
   <div class="resumen">
     <h2>En resumen</h2>
@@ -69,11 +82,12 @@ footer a{color:inherit}
   </div>
 
   <h2>1. Quién es el responsable</h2>
-  <p>El responsable de los datos que se tratan en CampControl (la app para Android, la versión web y esta página) es:</p>
+  <p>El responsable de los datos que se tratan en FincApunte (la app para Android, la versión web y esta página) es:</p>
   <ul>
     <li><strong>Nombre:</strong> Enrique Pérez Camacho</li>
     <li><strong>Localidad:</strong> Cantillana (Sevilla), España</li>
     <li><strong>Correo de contacto:</strong> <a href="mailto:enriqueperezcamacho2001@gmail.com">enriqueperezcamacho2001@gmail.com</a></li>
+    <li><strong>Teléfono y WhatsApp:</strong> <a href="tel:+34603736726">603 73 67 26</a></li>
   </ul>
 
   <h2>2. Qué datos se guardan y para qué</h2>
@@ -102,7 +116,7 @@ footer a{color:inherit}
   <p>Puedes quitar cualquier permiso desde los ajustes de Android; la parte de la app que lo necesita dejará de funcionar.</p>
 
   <h2>4. Quién más ve tus datos</h2>
-  <p>Los datos de una finca solo los ven las personas que forman parte de ella. Para que CampControl funcione se usan estos proveedores, que tratan los datos por cuenta nuestra:</p>
+  <p>Los datos de una finca solo los ven las personas que forman parte de ella. Para que FincApunte funcione se usan estos proveedores, que tratan los datos por cuenta nuestra:</p>
   <ul>
     <li><strong>Supabase</strong>: base de datos y almacenamiento de fotos y vídeos, y gestión de las cuentas.</li>
     <li><strong>Netlify</strong>: alojamiento de esta web y recepción de los mensajes del formulario.</li>
@@ -137,7 +151,7 @@ footer a{color:inherit}
   <p>Si crees que no hemos tratado bien tus datos, puedes reclamar ante la <a href="https://www.aepd.es" rel="noopener">Agencia Española de Protección de Datos</a>.</p>
 
   <h2>8. Menores</h2>
-  <p>CampControl está pensada para personas que trabajan en el campo. No está dirigida a menores de 14 años, que no deben crear una cuenta.</p>
+  <p>FincApunte está pensada para personas que trabajan en el campo. No está dirigida a menores de 14 años, que no deben crear una cuenta.</p>
 
   <h2>9. Seguridad</h2>
   <p>Las comunicaciones entre la app y el servidor van cifradas, las contraseñas se guardan cifradas y cada finca tiene reglas de acceso para que solo su equipo vea sus datos. El dueño puede cambiar el código de invitación y quitar a una persona de la finca en cualquier momento.</p>
@@ -148,8 +162,8 @@ footer a{color:inherit}
 
 <footer>
   <div class="wrap">
-    <span>© <span id="year">2026</span> CampControl · Cantillana, Sevilla</span>
-    <a href="./">Volver a la web</a>
+    <span>© <span id="year">2026</span> FincApunte · Cantillana, Sevilla</span>
+    <span><a href="aviso-legal.html">Aviso legal</a> · <a href="./">Volver a la web</a></span>
   </div>
 </footer>
 <script>document.getElementById("year").textContent = new Date().getFullYear();</script>

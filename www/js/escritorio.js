@@ -1,4 +1,4 @@
-/* CampControl en el ordenador: activa el diseño de escritorio (css/escritorio.css) en pantallas grandes.
+/* FincApunte en el ordenador: activa el diseño de escritorio (css/escritorio.css) en pantallas grandes.
    Dentro de la APK no hace nada. */
 (() => {
   if (nativo()) return;
@@ -7,16 +7,17 @@
 
   /* ---------- Menú lateral: marca, accesos de la finca y atajos ---------- */
   const nav = $('nav');
-  nav.insertAdjacentHTML('afterbegin', '<div class="pc-brand"><img src="icon-192.png" alt="" width="30" height="30">CampControl</div>');
+  nav.insertAdjacentHTML('afterbegin', '<div class="pc-brand"><img src="icon-192.png" alt="" width="30" height="30">FincApunte</div>');
   const ICO = {
     mEquipo: '<path d="M9 11a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7zM3 20c.5-3.5 3-5.5 6-5.5s5.5 2 6 5.5M16 4.5a3.5 3.5 0 0 1 0 7M18 14.8c1.8.8 3 2.6 3.3 5.2"/>',
     mHist: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     mInforme: '<path d="M6 3h9l4 4v14H6z"/><path d="M14 3v5h5M9 13h7M9 17h7"/>',
     mExport: '<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>',
     mImport: '<path d="M12 20V9M7 14l5-5 5 5M5 4h14"/>',
-    mCuenta: '<path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/>'
+    mCuenta: '<path d="M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3"/><path d="M18 3v4h-4M6 21v-4h4"/>',
+    mSalir: '<path d="M15 4h4v16h-4M10 8l-4 4 4 4M6 12h10"/>'
   };
-  const NOM = { mEquipo: 'Equipo', mHist: 'Historial', mInforme: 'Informes', mExport: 'Exportar copia', mImport: 'Importar copia', mCuenta: 'Sincronización' };
+  const NOM = { mEquipo: 'Equipo', mHist: 'Historial', mInforme: 'Informes', mExport: 'Exportar copia', mImport: 'Importar copia', mCuenta: 'Sincronización', mSalir: 'Cambiar de cuenta' };
   nav.insertAdjacentHTML('beforeend', '<div class="pc-sec">Finca</div>');
   const enlaces = Object.keys(ICO).map(id => {
     const b = document.createElement('button'); b.type = 'button'; b.className = 'pc-link'; b.dataset.m = id;

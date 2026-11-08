@@ -1,4 +1,4 @@
--- CampControl · paso a varias fincas, dueños, trabajadores e historial
+-- FincApunte · paso a varias fincas, dueños, trabajadores e historial
 -- Ejecutar UNA vez en Supabase → SQL Editor, después de instalar.sql. Se puede repetir sin romper nada.
 -- Los datos que ya existen pasan a la finca «Las Largas» y todos los usuarios actuales quedan como dueños.
 

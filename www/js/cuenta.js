@@ -21,9 +21,13 @@ const Cuenta = (() => {
 
   /* ---------- Cabecera y menú ---------- */
   function pintarCabecera() {
-    $('#fincaNom').textContent = Finca.local() ? 'CampControl' : Finca.actual.nombre;
+    $('#fincaNom').textContent = Finca.local() ? 'FincApunte' : Finca.actual.nombre;
     $('#mEquipo').hidden = Finca.local();
     $('#mHist').hidden = Finca.local() || !Finca.esDueno();
+    // Cuenta: cerrar sesión o cambiar de cuenta (quien trabaja en varias fincas con cuentas distintas)
+    const u = Sync.usuario();
+    $('#mSalir').firstChild.textContent = u ? 'Cambiar de cuenta o cerrar sesión' : 'Entrar con una cuenta';
+    $('#mSalirEmail').textContent = u?.email ? 'Ahora: ' + u.email : '';
   }
 
   /* ---------- Bienvenida ---------- */
@@ -141,10 +145,11 @@ const Cuenta = (() => {
     cerrar(); pintarCabecera();
   };
   $('#bvSalir').onclick = () => salir();
+  $('#mSalir').onclick = () => { $('#menu').hidden = true; Sync.usuario() ? salir() : abrir(); };
 
   async function salir() {
     const p = Finca.id() ? Sync.pendientes() : 0;
-    if (!(await confirmar(p ? `Hay ${plural(p, 'cambio', 'cambios')} sin enviar todavía. Si cierras sesión no se enviarán hasta que vuelvas a entrar.` : 'Cerrarás sesión en este móvil. Los datos de la finca siguen en el servidor.', { titulo: 'Cerrar sesión', ok: 'Cerrar sesión' }))) return;
+    if (!(await confirmar(p ? `Hay ${plural(p, 'cambio', 'cambios')} sin enviar todavía. Si cierras sesión no se enviarán hasta que vuelvas a entrar.` : 'Cerrarás sesión en este móvil y podrás entrar con otra cuenta. Los datos de la finca siguen guardados en el servidor.', { titulo: 'Cambiar de cuenta o cerrar sesión', ok: 'Cerrar sesión' }))) return;
     try { await (await cliente())?.auth.signOut(); } catch (e) {}
     Sync.setUsuario(null); Finca.set(null); location.reload();
   }
@@ -207,7 +212,7 @@ const Cuenta = (() => {
     });
     $('#eqInfo').textContent = dueno ? 'Todos pueden añadir, cambiar y borrar. Solo los dueños gestionan el equipo y ven el historial.' : 'Si necesitas algo del equipo, habla con el dueño de la finca.';
   }
-  const textoInvitacion = () => `Únete a la finca «${Finca.actual.nombre}» en CampControl con este código: ${$('#eqCodigo').textContent}`;
+  const textoInvitacion = () => `Únete a la finca «${Finca.actual.nombre}» en FincApunte con este código: ${$('#eqCodigo').textContent}`;
   $('#eqCopiar').onclick = async () => {
     try { await navigator.clipboard.writeText($('#eqCodigo').textContent); toast('Código copiado'); }
     catch (e) { const r = document.createRange(); r.selectNodeContents($('#eqCodigo')); getSelection().removeAllRanges(); getSelection().addRange(r); toast('Mantén pulsado para copiar'); }
@@ -215,7 +220,7 @@ const Cuenta = (() => {
   $('#eqCompartir').onclick = async () => {
     try {
       const Sh = plugin('Share');
-      if (Sh) await Sh.share({ title: 'Invitación a CampControl', text: textoInvitacion() });
+      if (Sh) await Sh.share({ title: 'Invitación a FincApunte', text: textoInvitacion() });
       else if (navigator.share) await navigator.share({ text: textoInvitacion() });
       else { await navigator.clipboard.writeText(textoInvitacion()); toast('Invitación copiada: pégala en WhatsApp'); }
     } catch (e) { if (!/cancel|abort/i.test(String(e?.message || e))) toast('No se pudo compartir'); }

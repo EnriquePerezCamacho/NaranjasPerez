@@ -238,6 +238,10 @@ nav button[aria-pressed="true"] svg{color:var(--orange)}
 .menu{position:fixed;z-index:1600;top:calc(56px + env(safe-area-inset-top,0px));right:max(12px,env(safe-area-inset-right,0px));background:var(--panel);border:1px solid var(--line);border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.25);display:grid;min-width:240px;overflow:hidden}
 .menu button{background:none;border:0;text-align:left;padding:14px 16px;border-bottom:1px solid var(--line)}
 .menu button:last-of-type{border-bottom:0}
+.msalir{border-top:1px solid var(--line)!important;display:grid!important;gap:2px;text-align:left}
+.msalir span{font-size:.76rem;color:var(--muted);font-weight:400;overflow-wrap:anywhere}
+.msalir span:empty{display:none}
+.bienv-legal{color:#fff;opacity:.7;font-size:.82rem;justify-self:center;text-align:center;margin-top:4px}
 .mver{padding:8px 16px 10px;font-size:.78rem;color:var(--muted);border-top:1px solid var(--line)}
 .viewer{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.94);display:grid;place-items:center;
   padding:calc(56px + env(safe-area-inset-top,0px)) 12px calc(56px + env(safe-area-inset-bottom,0px))}

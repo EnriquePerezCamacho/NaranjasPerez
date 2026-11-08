@@ -1,6 +1,6 @@
 {
-  "name": "CampControl",
-  "short_name": "CampControl",
+  "name": "FincApunte",
+  "short_name": "FincApunte",
   "description": "Incidencias de los naranjos con foto y ubicación en el mapa",
   "lang": "es",
   "start_url": "./",

@@ -1,9 +1,9 @@
-# CampControl
+# FincApunte
 
 App de campo para fincas: incidencias con foto/vídeo geolocalizadas, seguimiento con avisos, parcelas, tratamientos con plazo de seguridad, recorridos con el tractor, informes Excel/PDF. Varias fincas, con dueños y trabajadores, e historial de cambios para el dueño.
 
 ## Descargar la APK
-https://github.com/EnriquePerezCamacho/NaranjasPerez/releases/latest/download/campcontrol.apk
+https://github.com/EnriquePerezCamacho/NaranjasPerez/releases/latest/download/fincapunte.apk
 
 Cada `git push` a `main` compila una APK nueva (firmada siempre con la misma llave de `firma/`, para poder instalar encima sin perder datos).
 

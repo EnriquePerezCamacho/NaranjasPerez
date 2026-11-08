@@ -1,4 +1,4 @@
-/* CampControl en el ordenador (pantallas de 1100 px o más, fuera de la APK).
+/* FincApunte en el ordenador (pantallas de 1100 px o más, fuera de la APK).
    Menú lateral fijo, lista de incidencias junto al mapa, ventanas centradas y fichas en varias columnas.
    Todo cuelga de body.pc, que pone js/escritorio.js; en el móvil no cambia nada. */
 

@@ -4,7 +4,7 @@ const TROZO = 3 * 196608;
 async function escritorCopia(nombre) {
   const FS = plugin('Filesystem');
   if (!FS) { const partes = []; return { add: async t => { partes.push(t); }, fin: async () => ({ blob: new Blob(partes, { type: 'application/x-ndjson' }) }) }; }
-  let dir = 'DOCUMENTS', ruta = `CampControl/${nombre}`, empezado = false, buf = '';
+  let dir = 'DOCUMENTS', ruta = `FincApunte/${nombre}`, empezado = false, buf = '';
   try { await FS.requestPermissions?.(); } catch (e) {}
   const escribir = async t => {
     if (!empezado) { await FS.writeFile({ path: ruta, data: t, directory: dir, encoding: 'utf8', recursive: true }); empezado = true; }
@@ -26,11 +26,11 @@ const sinSync = ({ _sync, ...r }) => r;
 let exportando = false;
 $('#mExport').onclick = async () => {
   if (exportando) return; exportando = true; $('#menu').hidden = true;
-  const nombre = `campcontrol-${(Finca.actual?.nombre || 'finca').toLowerCase().replace(/[^a-z0-9ñ]+/gi, '-')}-${today()}-${new Date().toTimeString().slice(0, 5).replace(':', '')}.json`;
+  const nombre = `fincapunte-${(Finca.actual?.nombre || 'finca').toLowerCase().replace(/[^a-z0-9ñ]+/gi, '-')}-${today()}-${new Date().toTimeString().slice(0, 5).replace(':', '')}.json`;
   try {
     const w = await escritorCopia(nombre), inc = vivos('inc');
     let bytes = 0;
-    await w.add(JSON.stringify({ t: 'meta', app: 'campcontrol', finca: Finca.actual?.nombre || '', version: 3, exportado: new Date().toISOString(), n: inc.length }) + '\n');
+    await w.add(JSON.stringify({ t: 'meta', app: 'fincapunte', finca: Finca.actual?.nombre || '', version: 3, exportado: new Date().toISOString(), n: inc.length }) + '\n');
     for (const p of vivos('parcelas')) await w.add(JSON.stringify({ t: 'parcela', rec: sinSync(p) }) + '\n');
     for (const t of vivos('trat')) await w.add(JSON.stringify({ t: 'trat', rec: sinSync(t) }) + '\n');
     for (let k = 0; k < inc.length; k++) {
@@ -63,7 +63,7 @@ $('#inImport').onchange = async e => {
   } catch (err) {
     console.error(err);
     const m = err?.message || String(err);
-    if (m === 'formato' || err instanceof SyntaxError) toast('Ese archivo no es una copia válida de CampControl', 5000);
+    if (m === 'formato' || err instanceof SyntaxError) toast('Ese archivo no es una copia válida de FincApunte', 5000);
     else if (/quota/i.test(m) || err?.name === 'QuotaExceededError') toast('No hay espacio libre en el móvil para importar la copia. Prueba a importarla desde el ordenador (versión web).', 12000);
     else toast('No se pudo importar la copia: ' + m, 12000);
   }

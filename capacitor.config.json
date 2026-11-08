@@ -1,6 +1,6 @@
 {
   "appId": "es.cantillana.minaranjal",
-  "appName": "CampControl",
+  "appName": "FincApunte",
   "webDir": "www",
   "android": {
     "allowMixedContent": false

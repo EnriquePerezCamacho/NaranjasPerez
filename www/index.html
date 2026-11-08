@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#1f3d2b">
-<title>CampControl</title>
+<title>FincApunte</title>
 <link rel="manifest" href="manifest.webmanifest">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -16,7 +16,7 @@
 </head>
 <body>
 <header>
-  <button class="finca-btn" id="fincaBtn" aria-label="Cambiar de finca"><span class="dot"></span><span id="fincaNom">CampControl</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m7 10 5 5 5-5"/></svg></button>
+  <button class="finca-btn" id="fincaBtn" aria-label="Cambiar de finca"><span class="dot"></span><span id="fincaNom">FincApunte</span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="m7 10 5 5 5-5"/></svg></button>
   <button class="due-pill" id="duePill" hidden aria-label="Incidencias para revisar">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 16V11a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20a2 2 0 0 0 4 0"/></svg><span id="dueN"></span>
   </button>
@@ -293,7 +293,7 @@
 <!-- Bienvenida: cuenta y fincas -->
 <div class="bienv" id="bienv" hidden>
   <div class="bienv-in">
-    <div class="bienv-logo"><img src="icon-192.png" alt="" width="48" height="48">CampControl</div>
+    <div class="bienv-logo"><img src="icon-192.png" alt="" width="48" height="48">FincApunte</div>
     <p class="bienv-sub" id="bvSub">Incidencias, tratamientos y recorridos de tu finca, compartidos con tu equipo.</p>
 
     <form id="bvEntrar" class="bienv-card" novalidate>
@@ -315,10 +315,11 @@
       <div class="field"><label for="bvNueva">Crear mi propia finca</label>
         <div style="display:flex;gap:8px"><input id="bvNueva" maxlength="60" placeholder="Nombre de la finca"><button type="button" class="btn" id="bvCrear">Crear</button></div>
         <span class="hint">Serás el dueño y podrás invitar a tus trabajadores.</span></div>
-      <button type="button" class="btn link" id="bvSalir">Cerrar sesión</button>
+      <button type="button" class="btn link" id="bvSalir">Cerrar sesión o entrar con otra cuenta</button>
     </div>
 
     <button type="button" class="btn link bienv-local" id="bvLocal">Usar sin cuenta (solo en este móvil)</button>
+    <a class="bienv-legal" href="https://fincapunte.netlify.app/privacidad.html" target="_blank" rel="noopener">Política de privacidad</a>
   </div>
 </div>
 
@@ -329,7 +330,7 @@
     <div class="codigo-box" id="eqCodigoBox" hidden>
       <span class="lbl">Código para invitar</span>
       <div class="codigo" id="eqCodigo">······</div>
-      <p class="small" style="margin:0">Pásaselo a tus trabajadores. En CampControl, al entrar, eligen «Unirme a una finca con un código».</p>
+      <p class="small" style="margin:0">Pásaselo a tus trabajadores. En FincApunte, al entrar, eligen «Unirme a una finca con un código».</p>
       <div class="row" style="display:flex;gap:8px;flex-wrap:wrap">
         <button type="button" class="btn sm" id="eqCopiar" style="flex:1">Copiar</button>
         <button type="button" class="btn sm" id="eqCompartir" style="flex:1">Enviar por WhatsApp…</button>
@@ -416,6 +417,7 @@
   <button id="mExport">Exportar copia de seguridad</button>
   <button id="mImport">Importar copia de seguridad</button>
   <button id="mFit">Ver todo en el mapa</button>
+  <button id="mSalir" class="msalir">Cambiar de cuenta o cerrar sesión<span id="mSalirEmail"></span></button>
   <div class="mver" id="mVer"></div>
 </div>
 <div class="viewer" id="viewer" hidden><div id="viewerStage"></div>

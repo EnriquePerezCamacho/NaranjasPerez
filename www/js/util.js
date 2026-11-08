@@ -64,7 +64,8 @@ const cuentaMedia = arr => {
   const v = arr.filter(isVid).length, f = arr.length - v;
   return [f ? `${f} foto${f > 1 ? 's' : ''}` : '', v ? `${v} vídeo${v > 1 ? 's' : ''}` : ''].filter(Boolean).join(' · ');
 };
-async function comprimir(file, max = 2400, q = 0.85) {
+// 1600 px y calidad 0,8: se ve bien en el móvil y el ordenador y ocupa unas 3 veces menos que antes
+async function comprimir(file, max = 1600, q = 0.8) {
   let img = null;
   try { img = await createImageBitmap(file, { imageOrientation: 'from-image' }); } catch (e) {}
   if (!img) img = await new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = URL.createObjectURL(file); });
@@ -111,11 +112,23 @@ async function anadirArchivos(files) {
       if (f.size > 200 * 1048576) { toast('Vídeo demasiado grande (máx. 200 MB). Graba uno más corto.'); continue; }
       d.arr.push(mkMedia(f));
       if (f.size > 50 * 1048576) toast(`Vídeo de ${fmtMB(f.size)}: se guarda en este móvil, pero es demasiado grande para compartirlo (máx. 50 MB)`, 5000);
+      else avisarVideoLargo(f);
       continue;
     }
     try { d.arr.push(mkMedia(await comprimir(f))); } catch (e) { toast('No se pudo leer una de las fotos'); }
   }
   d.pintar();
+}
+/* Los vídeos largos llenan pronto el espacio compartido: avisamos a partir de 1 minuto */
+function avisarVideoLargo(f) {
+  const v = document.createElement('video'), url = URL.createObjectURL(f);
+  v.preload = 'metadata';
+  v.onloadedmetadata = () => {
+    const s = Math.round(v.duration || 0); URL.revokeObjectURL(url);
+    if (s > 60) toast(`Vídeo de ${Math.floor(s / 60)} min ${s % 60} s (${fmtMB(f.size)}). Ocupa mucho espacio compartido: mejor vídeos de menos de 1 minuto.`, 6000);
+  };
+  v.onerror = () => URL.revokeObjectURL(url);
+  v.src = url;
 }
 ['inCam', 'inVid', 'inGal'].forEach(id => $('#' + id).onchange = e => { anadirArchivos([...e.target.files]); e.target.value = ''; });
 
@@ -206,12 +219,12 @@ $('#viewer').addEventListener('click', e => { if ((e.target.id === 'viewer' || e
   V.addEventListener('wheel', e => { if (!zoom.img) return; e.preventDefault(); zoom.s = Math.max(1, Math.min(6, zoom.s * (e.deltaY < 0 ? 1.15 : 1 / 1.15))); aplicarZoom(); }, { passive: false });
 })();
 
-/* Guardar la foto o el vídeo que se está viendo en Documentos › CampControl (o compartirlo) */
+/* Guardar la foto o el vídeo que se está viendo en Documentos › FincApunte (o compartirlo) */
 $('#vGuardar').onclick = async e => {
   e.stopPropagation();
   const m = vList[vIdx], b = mBlob(m); if (!b) return;
   const ext = ((m.type || b.type || '').split('/')[1] || 'jpg').replace('jpeg', 'jpg').replace('quicktime', 'mov').replace(/[^a-z0-9]/gi, '').slice(0, 5);
-  const nombre = `campcontrol-${today()}-${(m.id || uid()).slice(0, 8)}.${ext}`;
+  const nombre = `fincapunte-${today()}-${(m.id || uid()).slice(0, 8)}.${ext}`;
   const btn = $('#vGuardar'); btn.disabled = true;
   try { await guardarGrande(nombre, b, isVid(m) ? 'Vídeo guardado' : 'Foto guardada'); }
   catch (err) { toast('No se pudo guardar: ' + (err?.message || err)); }
@@ -222,7 +235,7 @@ async function guardarGrande(nombre, blob, titulo) {
   const FS = plugin('Filesystem');
   if (!FS) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nombre; document.body.appendChild(a); a.click(); a.remove(); toast('Archivo descargado'); return; }
   try { await FS.requestPermissions?.(); } catch (e) {}
-  const T = 3 * 262144; let dir = 'DOCUMENTS', ruta = `CampControl/${nombre}`, r;
+  const T = 3 * 262144; let dir = 'DOCUMENTS', ruta = `FincApunte/${nombre}`, r;
   for (let o = 0; o < blob.size || o === 0; o += T) {
     const data = await blobB64(blob.slice(o, o + T));
     if (o === 0) {
@@ -252,7 +265,7 @@ function selectorRevisar(box, get, set) {
   return pintar;
 }
 
-/* Guardar un archivo (informe, copia): en la APK va a Documentos/CampControl y se puede compartir */
+/* Guardar un archivo (informe, copia): en la APK va a Documentos/FincApunte y se puede compartir */
 async function guardarArchivo(nombre, blob, titulo = 'Archivo guardado') {
   const FS = plugin('Filesystem');
   if (!FS) {
@@ -262,14 +275,14 @@ async function guardarArchivo(nombre, blob, titulo = 'Archivo guardado') {
   const data = await blobB64(blob);
   let r, dir = 'DOCUMENTS';
   try { await FS.requestPermissions?.(); } catch (e) {}
-  try { r = await FS.writeFile({ path: `CampControl/${nombre}`, data, directory: dir, recursive: true }); }
+  try { r = await FS.writeFile({ path: `FincApunte/${nombre}`, data, directory: dir, recursive: true }); }
   catch (e) { dir = 'CACHE'; r = await FS.writeFile({ path: nombre, data, directory: dir }); }
   avisoArchivo({ uri: r.uri, dir, nombre, titulo, detalle: fmtMB(blob.size) });
 }
 function avisoArchivo({ uri, dir, nombre, titulo, detalle }) {
   $('#foTitle').textContent = titulo;
   $('#foText').innerHTML = dir === 'DOCUMENTS'
-    ? `Guardado en <b>Documentos › CampControl</b> del móvil.<br><span class="hint">${esc(nombre)} · ${esc(detalle)}</span>`
+    ? `Guardado en <b>Documentos › FincApunte</b> del móvil.<br><span class="hint">${esc(nombre)} · ${esc(detalle)}</span>`
     : `Archivo listo (${esc(detalle)}). Compártelo para guardarlo en Drive, WhatsApp o el correo.`;
   $('#fileOk').hidden = false;
   $('#foShare').onclick = async () => {

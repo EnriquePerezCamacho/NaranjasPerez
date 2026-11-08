@@ -57,6 +57,6 @@ document.addEventListener('keydown', e => {
   Sync.init();
   Cuenta.init();
   Rec.recuperar();
-  (async () => { let v = ''; try { v = (await plugin('App')?.getInfo())?.version || ''; } catch (e) {} $('#mVer').textContent = 'CampControl' + (v ? ' · versión ' + v : ''); })();
+  (async () => { let v = ''; try { v = (await plugin('App')?.getInfo())?.version || ''; } catch (e) {} $('#mVer').textContent = 'FincApunte' + (v ? ' · versión ' + v : ''); })();
   if ('serviceWorker' in navigator && location.protocol.startsWith('http') && !nativo()) navigator.serviceWorker.register('sw.js').catch(() => {});
 })();
