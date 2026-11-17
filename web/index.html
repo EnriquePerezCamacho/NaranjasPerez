@@ -108,7 +108,8 @@ section{padding:clamp(72px,9vw,120px) 0}
 .head p{color:var(--muted);margin-top:14px;font-size:1.06rem}
 
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px}
-.step{border-top:1px solid var(--ink);padding-top:20px}
+
+.step-img{display:block;width:100%;height:auto;margin-bottom:18px;border-radius:12px}
 .step small{font-size:13px;font-weight:600;color:var(--muted)}
 .step h3{font-size:1.2rem;margin:8px 0}
 .step p{color:var(--muted)}
@@ -386,9 +387,9 @@ footer{border-top:1px solid var(--line);padding:48px 0 40px;margin-top:clamp(72p
         <p>Sin libretas ni mensajes sueltos. Lo que ves en el árbol queda apuntado en su sitio.</p>
       </div>
       <div class="steps">
-        <div class="step"><small>Paso 1</small><h3>Haz una foto o un vídeo</h3><p>Con el botón naranja la foto sale con su ubicación al momento. Si tienes prisa, la completas luego.</p></div>
-        <div class="step"><small>Paso 2</small><h3>Añade lo que pasa</h3><p>Tipo de incidencia, fila, árbol y una nota. Si hay que volver a mirarla, pon una fecha de revisión.</p></div>
-        <div class="step"><small>Paso 3</small><h3>Tu equipo lo ve en el mapa</h3><p>Aparece en el móvil de todos. Cuando se resuelve, se marca como resuelta.</p></div>
+        <div class="step"><img class="step-img" src="img/paso-1.webp" width="960" height="600" loading="lazy" alt="Mapa de la finca en el móvil con el botón naranja para hacer una foto rápida"><small>Paso 1</small><h3>Haz una foto o un vídeo</h3><p>Con el botón naranja la foto sale con su ubicación al momento. Si tienes prisa, la completas luego.</p></div>
+        <div class="step"><img class="step-img" src="img/paso-2.webp" width="960" height="600" loading="lazy" alt="Ventana de una incidencia con su foto, título, tipo, estado y parcela"><small>Paso 2</small><h3>Añade lo que pasa</h3><p>Tipo de incidencia, fila, árbol y una nota. Si hay que volver a mirarla, pon una fecha de revisión.</p></div>
+        <div class="step"><img class="step-img" src="img/paso-3.webp" width="960" height="600" loading="lazy" alt="Mapa y lista de incidencias de la finca vistos desde el ordenador"><small>Paso 3</small><h3>Tu equipo lo ve en el mapa</h3><p>Aparece en el móvil y en el ordenador de todos. Cuando se resuelve, se marca como resuelta.</p></div>
       </div>
     </div>
   </section>
